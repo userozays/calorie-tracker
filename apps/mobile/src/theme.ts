@@ -1,3 +1,4 @@
+import { BricolageGrotesque_700Bold } from "@expo-google-fonts/bricolage-grotesque/700Bold";
 import { Platform } from "react-native";
 
 /*
@@ -45,10 +46,13 @@ export const space = (steps: number) => steps * 4;
 export const radius = { sm: 6, md: 10, lg: 16, panel: 24, pill: 999 } as const;
 
 export const fonts = {
-  /** Space Grotesk Bold, loaded in the root layout; headings and big numbers only. */
-  display: "SpaceGroteskBold",
+  /** Bricolage Grotesque Bold: warm and appetizing, strong figures for calorie numbers; headings and big numbers only. */
+  display: "BricolageGrotesque_700Bold",
   body: Platform.select({ ios: "System", default: "sans-serif" }),
 } as const;
+
+/** Font files to load once at startup (root layout and the preview gallery). */
+export const fontAssets = { [fonts.display]: BricolageGrotesque_700Bold };
 
 /** Type scale in px with line heights; display sizes use `fonts.display`. */
 export const type = {

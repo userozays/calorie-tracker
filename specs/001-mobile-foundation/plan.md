@@ -94,7 +94,7 @@ apps/mobile/
 ├── eas.json                 # development / preview / production profiles
 ├── metro.config.js
 ├── eslint.config.js         # eslint-config-expo + layer rules
-├── assets/                  # icon, splash, Space Grotesk Bold
+├── assets/                  # icon, splash
 └── src/
     ├── app/                 # expo-router: _layout.tsx (session + redirects), (auth)/, (setup)/, (tabs)/, log/, meal/, day/, plan/
     ├── components/

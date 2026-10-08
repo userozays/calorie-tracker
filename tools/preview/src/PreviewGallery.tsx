@@ -1,8 +1,10 @@
+import { Fraunces_700Bold } from "@expo-google-fonts/fraunces/700Bold";
+import { Nunito_800ExtraBold } from "@expo-google-fonts/nunito/800ExtraBold";
 import { useFonts } from "expo-font";
 import type { ComponentType } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import IndexScreen from "@/app/index";
-import { colors, fonts, radius, space, type } from "@/theme";
+import { colors, fontAssets, fonts, radius, space, type } from "@/theme";
 
 /*
  * Screen review gallery: every screen of the app in a 390×844 phone frame, rendered from the app's
@@ -23,15 +25,23 @@ const SCREENS: ScreenEntry[] = [
 
 const PHONE = { width: 390, height: 844 };
 
+/** The chosen display face and two alternatives the owner can compare (preview only). */
+const FACES = [
+  { family: fonts.display, name: "Bricolage Grotesque", note: "Seçilen. Sıcak, iştah açan, modern; rakamları güçlü, kalori halkasındaki büyük sayılar için.", chosen: true },
+  { family: "Fraunces_700Bold", name: "Fraunces", note: "Alternatif: yumuşak serif, tarif kitabı ve mutfak havası.", chosen: false },
+  { family: "Nunito_800ExtraBold", name: "Nunito", note: "Alternatif: yuvarlak hatlı, sağlık uygulamalarına yakın, çok samimi.", chosen: false },
+];
+
 export default function PreviewGallery() {
-  const [loaded] = useFonts({ [fonts.display]: require("../../../apps/mobile/assets/fonts/SpaceGroteskBold-700.ttf") });
-  if (!loaded) return null;
+  const [loaded, fontError] = useFonts({ ...fontAssets, Fraunces_700Bold, Nunito_800ExtraBold });
+  if (!loaded && !fontError) return null;
 
   return (
     <ScrollView style={styles.page} contentContainerStyle={styles.pageContent}>
       <View style={styles.band}>
         <Text style={styles.eyebrow}>KALORİ TAKİP · 001 MOBİL TEMEL</Text>
         <Text style={styles.bandTitle}>Ekran önizlemesi</Text>
+        {fontError && <Text style={[styles.bandLead, { color: colors.dangerSoft }]}>Yazı tipi yüklenemedi: {fontError.message}</Text>}
         <Text style={styles.bandLead}>
           Uygulamanın gerçek React Native kodu, örnek veriyle web'de çizildi. Telefonda görünüm aynı bileşenlerden gelir; yazı tipleri ve
           sistem kontrolleri platforma göre küçük farklar gösterebilir.
@@ -39,6 +49,21 @@ export default function PreviewGallery() {
       </View>
 
       <View style={styles.panel}>
+        <Text style={styles.sectionTitle}>Yazı tipi</Text>
+        <View style={styles.faces}>
+          {FACES.map(({ family, name, note, chosen }) => (
+            <View key={name} style={[styles.face, chosen && styles.faceChosen]}>
+              <Text style={[styles.faceLabel, chosen && styles.faceLabelChosen]}>{chosen ? "SEÇİLEN" : "ALTERNATİF"} · {name}</Text>
+              <Text style={[styles.faceBig, { fontFamily: family }, chosen && styles.onInk]}>1.840</Text>
+              <Text style={[styles.faceUnit, chosen && styles.onInkMuted]}>/ 2.150 kcal</Text>
+              <Text style={[styles.faceHeading, { fontFamily: family }, chosen && styles.onInk]}>Öğle yemeği</Text>
+              <Text style={[styles.faceSample, { fontFamily: family }, chosen && styles.onInk]}>Mercimek çorbası, ızgara tavuk göğsü</Text>
+              <Text style={[styles.faceGlyphs, { fontFamily: family }, chosen && styles.onInkMuted]}>Ğ Ş İ ı ç ö ü · 0123456789</Text>
+              <Text style={[styles.faceNote, chosen && styles.onInkMuted]}>{note}</Text>
+            </View>
+          ))}
+        </View>
+
         <Text style={styles.sectionTitle}>Ekranlar</Text>
         <ScrollView horizontal contentContainerStyle={styles.phones}>
           {SCREENS.map(({ id, title, note, Component }) => (
@@ -118,6 +143,19 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   sectionTitle: { ...type.displayMd, color: colors.fg, marginTop: space(4) },
+  faces: { flexDirection: "row", flexWrap: "wrap", gap: space(4) },
+  face: { flexGrow: 1, flexBasis: 280, gap: space(1), padding: space(5), borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface },
+  faceChosen: { backgroundColor: colors.ink, borderColor: colors.ink },
+  faceLabel: { ...type.label, color: colors.fgMuted },
+  faceLabelChosen: { color: colors.cta },
+  faceBig: { fontSize: 64, lineHeight: 70, color: colors.fg, marginTop: space(2) },
+  faceUnit: { ...type.body, color: colors.fgMuted },
+  faceHeading: { fontSize: 24, lineHeight: 30, color: colors.fg, marginTop: space(3) },
+  faceSample: { fontSize: 17, lineHeight: 24, color: colors.fg },
+  faceGlyphs: { fontSize: 17, lineHeight: 24, color: colors.fgMuted, marginTop: space(1) },
+  faceNote: { ...type.small, color: colors.fgMuted, marginTop: space(3) },
+  onInk: { color: colors.onInk },
+  onInkMuted: { color: colors.onInkMuted },
   phones: { gap: space(8), paddingVertical: space(2) },
   phoneColumn: { width: PHONE.width, gap: space(2) },
   phone: {
