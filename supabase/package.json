@@ -1,0 +1,7 @@
+{
+  "name": "@calorie/db",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Supabase migrations and (from T011) the database tests that run against the dev project."
+}

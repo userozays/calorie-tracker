@@ -21,7 +21,6 @@
   },
   "devDependencies": {
     "knip": "^6.40.0",
-    "tsx": "^4.23.15",
     "typescript": "^5"
   }
 }
