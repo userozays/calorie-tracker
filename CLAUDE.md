@@ -10,11 +10,14 @@ Mobile-first web app for logging meals. Users sign up with a username + password
 
 The product is becoming a **native iOS and Android app (Expo SDK 57, expo-router) on Supabase**, with **no web front end**. Everything below this section describes the **current Next.js web app**, which is being retired; do not build new features on it.
 
-- **Rules:** `.specify/memory/constitution.md` (v2.0.0) wins over this file. Monorepo: `apps/mobile` (Expo app), `packages/core` (`@calorie/core`: pure nutrition logic + Zod schemas, shared by the app and Edge Functions), `supabase/` (migrations, Row Level Security on every table, Edge Functions). Accounts: Supabase Auth with e-mail, Google, and Sign in with Apple on iOS only.
+- **Rules:** `.specify/memory/constitution.md` (v2.0.1) wins over this file. Monorepo: `apps/mobile` (Expo app), `packages/core` (`@calorie/core`: pure nutrition logic + Zod schemas, shared by the app and Edge Functions), `supabase/` (migrations, Row Level Security on every table, Edge Functions). Accounts: Supabase Auth with e-mail, Google, and Sign in with Apple on iOS only.
 - **Plan of work:** `specs/ROADMAP.md`: 001 mobile foundation → 002 food database + barcode → 003 AI logging → 004 tracking → 005 account and stores → 006 subscription (RevenueCat).
 - **Current feature:** `specs/001-mobile-foundation/` (spec, plan, research, data model, contracts, quickstart, `tasks.md` with 60 tasks). Its Phase 1 deletes this Next.js app and moves the kept logic into `packages/core`; T058 then rewrites this file for the monorepo.
 - **AI:** one hosted vision model behind one Edge Function, chosen on a Turkish food eval set; the owner decided to start with **Gemini** (paid tier for users, free tier only for development). No on-device or in-process models, no Ollama.
 - **Out of scope:** FitBot, the AI plan strategy, any website.
+- **Progress:** Phase 1 of 001 is done: the Next.js app is deleted; `packages/core` holds the moved logic (`npm test -w @calorie/core`); `apps/mobile` is the Expo shell (`npm run mobile`, `npx expo export --platform android` to check it builds); `supabase/` is initialized. Everything below the "Decisions for 001" list still describes the deleted web app until T058 rewrites this file.
+- **Screen previews:** the owner has no emulator. `npm run preview` renders the app's real screens with react-native-web and fake services in `tools/preview` (review only, never shipped) and writes `tools/preview/dist/artifact.html`, which is published as a claude.ai artifact. Add every new screen to `tools/preview/src/PreviewGallery.tsx` and republish when a phase adds screens.
+- **Expo rules for agents:** `apps/mobile/AGENTS.md` (always use versioned SDK 57 docs and `npx expo install`).
 - **Workflow:** Spec Kit skills in `.claude/skills/` (`/speckit-specify` → `/speckit-plan` → `/speckit-tasks` → `/speckit-implement`); small pull requests, one phase or story each.
 
 ### Decisions for 001 (details in `specs/001-mobile-foundation/`)

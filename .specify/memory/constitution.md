@@ -1,6 +1,7 @@
 <!--
 Sync Impact Report
-- Version change: 1.0.0 → 2.0.0 (MAJOR: the product becomes a native mobile app; layers, stack,
+- Version change: 2.0.0 → 2.0.1 (PATCH: the web preview tool is named as review-only).
+- Previous: 1.0.0 → 2.0.0 (MAJOR: the product becomes a native mobile app; layers, stack,
   auth and the server boundary are redefined)
 - Modified principles:
   - I. Layered Architecture → I. Layered Mobile Architecture (Expo app + packages/core + Supabase)
@@ -128,7 +129,8 @@ reference flow: the Calyra app), plus own foods with label reading, saved meals,
 plan wizard (formula-based), titled plan periods, weight and BMI, water, intermittent fasting,
 progress and trends, data export and account deletion.
 
-**Out of scope:** any web front end (no website or web app), the FitBot chat coach, the AI plan
+**Out of scope:** any web front end (no website or web app; the `tools/preview` gallery that renders
+screens with react-native-web for reviews is an internal tool and is never published to users), the FitBot chat coach, the AI plan
 strategy, on-device or in-function ML models, and the local Ollama runtime.
 
 **Stack:** Expo SDK 57 with expo-router, React Native, React 19, TypeScript strict; Supabase
@@ -162,4 +164,4 @@ Every plan produced by `/speckit-plan` includes a constitution check; a deviatio
 in the plan's complexity tracking or the plan is revised. `CLAUDE.md` holds day-to-day guidance and
 must not contradict this document.
 
-**Version**: 2.0.0 | **Ratified**: 2026-10-08 | **Last Amended**: 2026-10-09
+**Version**: 2.0.1 | **Ratified**: 2026-10-08 | **Last Amended**: 2026-10-09
