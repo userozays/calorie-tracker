@@ -30,6 +30,13 @@ const FACES = [
   { family: fonts.display, name: "Bricolage Grotesque", note: "Seçilen. Sıcak, iştah açan, modern; rakamları güçlü, kalori halkasındaki büyük sayılar için.", chosen: true },
   { family: "Fraunces_700Bold", name: "Fraunces", note: "Alternatif: yumuşak serif, tarif kitabı ve mutfak havası.", chosen: false },
   { family: "Nunito_800ExtraBold", name: "Nunito", note: "Alternatif: yuvarlak hatlı, sağlık uygulamalarına yakın, çok samimi.", chosen: false },
+  {
+    family: '"Helvetica Neue", Helvetica, Arial, sans-serif',
+    weight: "700" as const,
+    name: "Helvetica",
+    note: "Alternatif: sade, klasik, nötr. Lisanslı yazı tipi: iPhone'da sistemde var, Android'e gömmek için Monotype lisansı gerekir. Burada cihazın kendi Helvetica'sı kullanılır; Windows'ta Arial görünür.",
+    chosen: false,
+  },
 ];
 
 export default function PreviewGallery() {
@@ -51,14 +58,14 @@ export default function PreviewGallery() {
       <View style={styles.panel}>
         <Text style={styles.sectionTitle}>Yazı tipi</Text>
         <View style={styles.faces}>
-          {FACES.map(({ family, name, note, chosen }) => (
+          {FACES.map(({ family, weight, name, note, chosen }) => (
             <View key={name} style={[styles.face, chosen && styles.faceChosen]}>
               <Text style={[styles.faceLabel, chosen && styles.faceLabelChosen]}>{chosen ? "SEÇİLEN" : "ALTERNATİF"} · {name}</Text>
-              <Text style={[styles.faceBig, { fontFamily: family }, chosen && styles.onInk]}>1.840</Text>
+              <Text style={[styles.faceBig, { fontFamily: family, fontWeight: weight }, chosen && styles.onInk]}>1.840</Text>
               <Text style={[styles.faceUnit, chosen && styles.onInkMuted]}>/ 2.150 kcal</Text>
-              <Text style={[styles.faceHeading, { fontFamily: family }, chosen && styles.onInk]}>Öğle yemeği</Text>
-              <Text style={[styles.faceSample, { fontFamily: family }, chosen && styles.onInk]}>Mercimek çorbası, ızgara tavuk göğsü</Text>
-              <Text style={[styles.faceGlyphs, { fontFamily: family }, chosen && styles.onInkMuted]}>Ğ Ş İ ı ç ö ü · 0123456789</Text>
+              <Text style={[styles.faceHeading, { fontFamily: family, fontWeight: weight }, chosen && styles.onInk]}>Öğle yemeği</Text>
+              <Text style={[styles.faceSample, { fontFamily: family, fontWeight: weight }, chosen && styles.onInk]}>Mercimek çorbası, ızgara tavuk göğsü</Text>
+              <Text style={[styles.faceGlyphs, { fontFamily: family, fontWeight: weight }, chosen && styles.onInkMuted]}>Ğ Ş İ ı ç ö ü · 0123456789</Text>
               <Text style={[styles.faceNote, chosen && styles.onInkMuted]}>{note}</Text>
             </View>
           ))}
@@ -144,7 +151,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: { ...type.displayMd, color: colors.fg, marginTop: space(4) },
   faces: { flexDirection: "row", flexWrap: "wrap", gap: space(4) },
-  face: { flexGrow: 1, flexBasis: 280, gap: space(1), padding: space(5), borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface },
+  face: { flexGrow: 1, flexBasis: 220, gap: space(1), padding: space(5), borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface },
   faceChosen: { backgroundColor: colors.ink, borderColor: colors.ink },
   faceLabel: { ...type.label, color: colors.fgMuted },
   faceLabelChosen: { color: colors.cta },
