@@ -1,14 +1,19 @@
-import { Fraunces_700Bold } from "@expo-google-fonts/fraunces/700Bold";
-import { Nunito_800ExtraBold } from "@expo-google-fonts/nunito/800ExtraBold";
 import { useFonts } from "expo-font";
-import type { ComponentType } from "react";
+import { useState, type ComponentType, type ReactNode } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
-import IndexScreen from "@/app/index";
-import { colors, fontAssets, fonts, radius, space, type } from "@/theme";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import WelcomeScreen from "@/app/(auth)/welcome";
+import TodayScreen from "@/app/(tabs)/today";
+import SetupScreen from "@/app/setup/[step]";
+import Button from "@/components/ui/Button";
+import StateMessage from "@/components/ui/StateMessage";
+import TextField from "@/components/ui/TextField";
+import Toast from "@/components/ui/Toast";
+import { colors, fontAssets, radius, space, type } from "@/theme";
 
 /*
  * Screen review gallery: every screen of the app in a 390×844 phone frame, rendered from the app's
- * own components (react-native-web), plus the design tokens they are built from. Add a screen by
+ * own components (react-native-web), plus the building blocks and design tokens. Add a screen by
  * adding an entry to SCREENS; its services come from src/fakes (see metro.config.js).
  */
 
@@ -20,115 +25,119 @@ interface ScreenEntry {
 }
 
 const SCREENS: ScreenEntry[] = [
-  { id: "placeholder", title: "Açılış (yer tutucu)", note: "Faz 1: tema ve yazı tipi. Karşılama ekranı US1'de (T028) gelecek.", Component: IndexScreen },
+  { id: "welcome", title: "Karşılama", note: "Çıkış yapmış kullanıcı. Apple, Google ve e-posta düğmeleri US1'de (T028) eklenecek.", Component: WelcomeScreen },
+  { id: "setup", title: "İlk kurulum (yer tutucu)", note: "Kurulumu bitmemiş hesap buraya yönlenir. Adımlar US2'de (T036).", Component: SetupScreen },
+  { id: "today", title: "Bugün (yer tutucu)", note: "Sekmeli ana ekran: Bugün, Geçmiş, Planım, Profil. Halka ve öğünler US2–US3'te.", Component: TodayScreen },
 ];
 
 const PHONE = { width: 390, height: 844 };
 
-/** The chosen display face and two alternatives the owner can compare (preview only). */
-const FACES = [
-  { family: fonts.display, name: "Bricolage Grotesque", note: "Seçilen. Sıcak, iştah açan, modern; rakamları güçlü, kalori halkasındaki büyük sayılar için.", chosen: true },
-  { family: "Fraunces_700Bold", name: "Fraunces", note: "Alternatif: yumuşak serif, tarif kitabı ve mutfak havası.", chosen: false },
-  { family: "Nunito_800ExtraBold", name: "Nunito", note: "Alternatif: yuvarlak hatlı, sağlık uygulamalarına yakın, çok samimi.", chosen: false },
-  {
-    family: '"Helvetica Neue", Helvetica, Arial, sans-serif',
-    weight: "700" as const,
-    name: "Helvetica",
-    note: "Alternatif: sade, klasik, nötr. Lisanslı yazı tipi: iPhone'da sistemde var, Android'e gömmek için Monotype lisansı gerekir. Burada cihazın kendi Helvetica'sı kullanılır; Windows'ta Arial görünür.",
-    chosen: false,
-  },
-];
-
 export default function PreviewGallery() {
-  const [loaded, fontError] = useFonts({ ...fontAssets, Fraunces_700Bold, Nunito_800ExtraBold });
+  const [loaded, fontError] = useFonts(fontAssets);
   if (!loaded && !fontError) return null;
 
   return (
-    <ScrollView style={styles.page} contentContainerStyle={styles.pageContent}>
-      <View style={styles.band}>
-        <Text style={styles.eyebrow}>KALORİ TAKİP · 001 MOBİL TEMEL</Text>
-        <Text style={styles.bandTitle}>Ekran önizlemesi</Text>
-        {fontError && <Text style={[styles.bandLead, { color: colors.dangerSoft }]}>Yazı tipi yüklenemedi: {fontError.message}</Text>}
-        <Text style={styles.bandLead}>
-          Uygulamanın gerçek React Native kodu, örnek veriyle web'de çizildi. Telefonda görünüm aynı bileşenlerden gelir; yazı tipleri ve
-          sistem kontrolleri platforma göre küçük farklar gösterebilir.
-        </Text>
-      </View>
-
-      <View style={styles.panel}>
-        <Text style={styles.sectionTitle}>Yazı tipi</Text>
-        <View style={styles.faces}>
-          {FACES.map(({ family, weight, name, note, chosen }) => (
-            <View key={name} style={[styles.face, chosen && styles.faceChosen]}>
-              <Text style={[styles.faceLabel, chosen && styles.faceLabelChosen]}>{chosen ? "SEÇİLEN" : "ALTERNATİF"} · {name}</Text>
-              <Text style={[styles.faceBig, { fontFamily: family, fontWeight: weight }, chosen && styles.onInk]}>1.840</Text>
-              <Text style={[styles.faceUnit, chosen && styles.onInkMuted]}>/ 2.150 kcal</Text>
-              <Text style={[styles.faceHeading, { fontFamily: family, fontWeight: weight }, chosen && styles.onInk]}>Öğle yemeği</Text>
-              <Text style={[styles.faceSample, { fontFamily: family, fontWeight: weight }, chosen && styles.onInk]}>Mercimek çorbası, ızgara tavuk göğsü</Text>
-              <Text style={[styles.faceGlyphs, { fontFamily: family, fontWeight: weight }, chosen && styles.onInkMuted]}>Ğ Ş İ ı ç ö ü · 0123456789</Text>
-              <Text style={[styles.faceNote, chosen && styles.onInkMuted]}>{note}</Text>
-            </View>
-          ))}
+    <SafeAreaProvider>
+      <ScrollView style={styles.page} contentContainerStyle={styles.pageContent}>
+        <View style={styles.band}>
+          <Text style={styles.eyebrow}>KALORİ TAKİP · 001 MOBİL TEMEL · FAZ 2</Text>
+          <Text style={styles.bandTitle}>Ekran önizlemesi</Text>
+          {fontError && <Text style={[styles.bandLead, styles.warning]}>Yazı tipi yüklenemedi: {fontError.message}</Text>}
+          <Text style={styles.bandLead}>
+            Uygulamanın gerçek React Native kodu, örnek veriyle web'de çizildi. Telefonda görünüm aynı bileşenlerden gelir; yazı tipleri ve
+            sistem kontrolleri platforma göre küçük farklar gösterebilir.
+          </Text>
         </View>
 
-        <Text style={styles.sectionTitle}>Ekranlar</Text>
-        <ScrollView horizontal contentContainerStyle={styles.phones}>
-          {SCREENS.map(({ id, title, note, Component }) => (
-            <View key={id} style={styles.phoneColumn}>
-              <View style={styles.phone}>
-                <Component />
+        <View style={styles.panel}>
+          <Text style={styles.sectionTitle}>Ekranlar</Text>
+          <ScrollView horizontal contentContainerStyle={styles.phones}>
+            {SCREENS.map(({ id, title, note, Component }) => (
+              <View key={id} style={styles.phoneColumn}>
+                <View style={styles.phone}>
+                  <Component />
+                </View>
+                <Text style={styles.phoneTitle}>{title}</Text>
+                <Text style={styles.phoneNote}>{note}</Text>
               </View>
-              <Text style={styles.phoneTitle}>{title}</Text>
-              <Text style={styles.phoneNote}>{note}</Text>
-            </View>
-          ))}
-        </ScrollView>
+            ))}
+          </ScrollView>
 
-        <Text style={styles.sectionTitle}>Renkler</Text>
-        <View style={styles.swatches}>
-          {Object.entries(colors).map(([name, value]) => (
-            <View key={name} style={styles.swatch}>
-              <View style={[styles.swatchChip, { backgroundColor: value }]} />
-              <Text style={styles.swatchName}>{name}</Text>
-              <Text style={styles.swatchValue}>{value}</Text>
-            </View>
-          ))}
-        </View>
+          <Text style={styles.sectionTitle}>Bileşenler</Text>
+          <View style={styles.components}>
+            <Specimen label="Düğme: birincil, ikincil, sade">
+              <Button label="Kaydet" onPress={() => {}} />
+              <Button label="Vazgeç" variant="secondary" onPress={() => {}} />
+              <Button label="Şifremi unuttum" variant="ghost" onPress={() => {}} />
+            </Specimen>
+            <Specimen label="Düğme: yükleniyor, devre dışı, koyu zeminde">
+              <Button label="Kaydediliyor" loading onPress={() => {}} />
+              <Button label="Kaydet" disabled onPress={() => {}} />
+              <View style={styles.inkSample}>
+                <Button label="E-postayla devam et" variant="onInk" onPress={() => {}} />
+              </View>
+            </Specimen>
+            <Specimen label="Metin alanı: boş, birimli, hatalı">
+              <FieldSample label="E-posta" placeholder="ornek@eposta.com" />
+              <FieldSample label="Ne kadar yedin?" unit="g" initial="150" hint="Tipik porsiyon 150 g" />
+              <FieldSample label="Boy" unit="cm" initial="300" error="Boy 100–250 cm arasında olmalı." />
+            </Specimen>
+            <Specimen label="Boş durum ve hata durumu">
+              <StateMessage kind="empty" title="Henüz öğün yok" body="İlk öğününü eklemek için + düğmesine dokun." actionLabel="Öğün ekle" onAction={() => {}} />
+              <StateMessage kind="error" title="Öğün kaydedilemedi" body="İnternet bağlantısı yok gibi görünüyor. Bağlantını kontrol edip tekrar dene." actionLabel="Tekrar dene" onAction={() => {}} />
+            </Specimen>
+            <Specimen label="Bildirim (ekranın altında belirir)">
+              <View style={styles.toastFrame}>
+                <Toast kind="success" title="Öğün kaydedildi" body="Öğle yemeği · 495 kcal" onDismiss={() => {}} />
+              </View>
+              <View style={styles.toastFrame}>
+                <Toast kind="error" title="Kaydedilemedi" body="Bağlantını kontrol edip tekrar dene." onDismiss={() => {}} />
+              </View>
+            </Specimen>
+          </View>
 
-        <Text style={styles.sectionTitle}>Yazı ölçeği</Text>
-        <View style={styles.stack}>
-          {Object.entries(type).map(([name, style]) => (
-            <View key={name} style={styles.typeRow}>
-              <Text style={styles.tokenName}>
-                {name} · {style.fontSize}/{style.lineHeight}
-              </Text>
-              <Text style={[style, { color: colors.fg }]}>Bugün 1.840 kcal, hedefin 2.150</Text>
-            </View>
-          ))}
-        </View>
+          <Text style={styles.sectionTitle}>Renkler</Text>
+          <View style={styles.swatches}>
+            {Object.entries(colors)
+              .filter(([name]) => name !== "transparent")
+              .map(([name, value]) => (
+                <View key={name} style={styles.swatch}>
+                  <View style={[styles.swatchChip, { backgroundColor: value }]} />
+                  <Text style={styles.swatchName}>{name}</Text>
+                  <Text style={styles.swatchValue}>{value}</Text>
+                </View>
+              ))}
+          </View>
 
-        <Text style={styles.sectionTitle}>Boşluk (4 px ızgara) ve köşeler</Text>
-        <View style={styles.stack}>
-          {[1, 2, 3, 4, 6, 8].map((steps) => (
-            <View key={steps} style={styles.spaceRow}>
-              <Text style={styles.tokenName}>space({steps}) = {space(steps)}</Text>
-              <View style={[styles.spaceBar, { width: space(steps) * 4 }]} />
-            </View>
-          ))}
-          <View style={styles.radii}>
-            {Object.entries(radius).map(([name, value]) => (
-              <View key={name} style={styles.radiusItem}>
-                <View style={[styles.radiusBox, { borderRadius: Math.min(value, 32) }]} />
+          <Text style={styles.sectionTitle}>Yazı ölçeği · Bricolage Grotesque</Text>
+          <View style={styles.stack}>
+            {Object.entries(type).map(([name, style]) => (
+              <View key={name} style={styles.typeRow}>
                 <Text style={styles.tokenName}>
-                  {name} · {value}
+                  {name} · {style.fontSize}/{style.lineHeight}
                 </Text>
+                <Text style={[style, { color: colors.fg }]}>Bugün 1.840 kcal, hedefin 2.150</Text>
               </View>
             ))}
           </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaProvider>
   );
+}
+
+function Specimen({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <View style={styles.specimen}>
+      <Text style={styles.specimenLabel}>{label}</Text>
+      <View style={styles.specimenBody}>{children}</View>
+    </View>
+  );
+}
+
+function FieldSample({ label, placeholder, unit, initial = "", hint, error }: { label: string; placeholder?: string; unit?: string; initial?: string; hint?: string; error?: string }) {
+  const [value, setValue] = useState(initial);
+  return <TextField label={label} value={value} onChangeText={setValue} placeholder={placeholder} unit={unit} hint={hint} error={error} keyboardType={unit ? "decimal-pad" : "default"} />;
 }
 
 const styles = StyleSheet.create({
@@ -138,6 +147,7 @@ const styles = StyleSheet.create({
   eyebrow: { ...type.label, color: colors.cta },
   bandTitle: { ...type.displayXl, color: colors.onInk, marginTop: space(3) },
   bandLead: { ...type.body, color: colors.onInkMuted, marginTop: space(3), maxWidth: 640 },
+  warning: { color: colors.dangerSoft },
   panel: {
     backgroundColor: colors.bg,
     borderRadius: radius.panel,
@@ -150,19 +160,6 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   sectionTitle: { ...type.displayMd, color: colors.fg, marginTop: space(4) },
-  faces: { flexDirection: "row", flexWrap: "wrap", gap: space(4) },
-  face: { flexGrow: 1, flexBasis: 220, gap: space(1), padding: space(5), borderRadius: radius.lg, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface },
-  faceChosen: { backgroundColor: colors.ink, borderColor: colors.ink },
-  faceLabel: { ...type.label, color: colors.fgMuted },
-  faceLabelChosen: { color: colors.cta },
-  faceBig: { fontSize: 64, lineHeight: 70, color: colors.fg, marginTop: space(2) },
-  faceUnit: { ...type.body, color: colors.fgMuted },
-  faceHeading: { fontSize: 24, lineHeight: 30, color: colors.fg, marginTop: space(3) },
-  faceSample: { fontSize: 17, lineHeight: 24, color: colors.fg },
-  faceGlyphs: { fontSize: 17, lineHeight: 24, color: colors.fgMuted, marginTop: space(1) },
-  faceNote: { ...type.small, color: colors.fgMuted, marginTop: space(3) },
-  onInk: { color: colors.onInk },
-  onInkMuted: { color: colors.onInkMuted },
   phones: { gap: space(8), paddingVertical: space(2) },
   phoneColumn: { width: PHONE.width, gap: space(2) },
   phone: {
@@ -176,6 +173,12 @@ const styles = StyleSheet.create({
   },
   phoneTitle: { ...type.bodyStrong, color: colors.fg },
   phoneNote: { ...type.small, color: colors.fgMuted },
+  components: { flexDirection: "row", flexWrap: "wrap", gap: space(4) },
+  specimen: { flexGrow: 1, flexBasis: 300, borderWidth: 1, borderColor: colors.border, borderRadius: radius.lg, padding: space(5), gap: space(3) },
+  specimenLabel: { ...type.label, color: colors.fgMuted },
+  specimenBody: { gap: space(3) },
+  inkSample: { backgroundColor: colors.ink, borderRadius: radius.md, padding: space(3) },
+  toastFrame: { height: 92, backgroundColor: colors.surface2, borderRadius: radius.md, overflow: "hidden" },
   swatches: { flexDirection: "row", flexWrap: "wrap", gap: space(3) },
   swatch: { width: 132, gap: space(1) },
   swatchChip: { height: 56, borderRadius: radius.md, borderWidth: 1, borderColor: colors.border },
@@ -184,9 +187,4 @@ const styles = StyleSheet.create({
   stack: { gap: space(3) },
   typeRow: { gap: space(1), borderBottomWidth: 1, borderBottomColor: colors.border, paddingBottom: space(3) },
   tokenName: { ...type.small, color: colors.fgMuted },
-  spaceRow: { flexDirection: "row", alignItems: "center", gap: space(3) },
-  spaceBar: { height: space(3), backgroundColor: colors.cta, borderRadius: radius.sm },
-  radii: { flexDirection: "row", flexWrap: "wrap", gap: space(6), marginTop: space(2) },
-  radiusItem: { alignItems: "center", gap: space(2) },
-  radiusBox: { width: 64, height: 64, backgroundColor: colors.surface2, borderWidth: 1, borderColor: colors.borderStrong },
 });

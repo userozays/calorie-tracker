@@ -38,6 +38,9 @@ export const colors = {
   macroProtein: "#bd41f0",
   macroCarbs: "#3898ec",
   macroFat: "#84cc16",
+  /** Dims the screen behind sheets and dialogs (ink at 50 %). */
+  overlay: "rgba(23, 11, 33, 0.5)",
+  transparent: "transparent",
 } as const;
 
 /** The 4 px grid: space(4) = 16. */
@@ -45,7 +48,7 @@ export const space = (steps: number) => steps * 4;
 
 export const radius = { sm: 6, md: 10, lg: 16, panel: 24, pill: 999 } as const;
 
-export const fonts = {
+const fonts = {
   /** Bricolage Grotesque Bold: warm and appetizing, strong figures for calorie numbers; headings and big numbers only. */
   display: "BricolageGrotesque_700Bold",
   body: Platform.select({ ios: "System", default: "sans-serif" }),

@@ -1,18 +1,11 @@
-import { StyleSheet, Text, View } from "react-native";
-import { colors, space, type } from "@/theme";
+import { Redirect } from "expo-router";
+import { useSession } from "@/hooks/useSession";
 
-/** Placeholder until the welcome screen (T028) and session routing (T022) exist. */
+/** The anchor route: sends each session state to its first screen. */
 export default function Index() {
-  return (
-    <View style={styles.screen}>
-      <Text style={styles.title}>Kalori Takip</Text>
-      <Text style={styles.lead}>Öğününü kaydet, hedefini takip et.</Text>
-    </View>
-  );
+  const { status } = useSession();
+  if (status === "signedOut") return <Redirect href="/welcome" />;
+  if (status === "needsSetup") return <Redirect href="/setup/body" />;
+  if (status === "ready") return <Redirect href="/today" />;
+  return null;
 }
-
-const styles = StyleSheet.create({
-  screen: { flex: 1, justifyContent: "center", padding: space(6), backgroundColor: colors.ink },
-  title: { ...type.displayXl, color: colors.onInk },
-  lead: { ...type.body, color: colors.onInkMuted, marginTop: space(2) },
-});

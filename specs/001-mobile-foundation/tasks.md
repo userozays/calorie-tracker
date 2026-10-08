@@ -69,12 +69,14 @@ Notes from Phase 1: dependencies listed in T005 that nothing imports yet were re
 - [x] T016 [P] Fix the plan engine floor in `packages/core/src/nutrition/plan.ts` (every cycling day ≥ the sex floor; the summary and weeks-to-goal use the real deficit `base.calories − tdee`) and in `packages/core/src/nutrition/planTuning.ts` (calorie slider minimum = sex floor; macros never exceed calories)
 - [x] T017 [P] Property tests `packages/core/tests/plan.property.test.ts` with fast-check: for any valid `PlanInputs`, every day (base, training, rest) ≥ floor and protein·4 + carbs·4 + fat·9 = calories within rounding; for any tuning action the same holds (SC-006)
 - [x] T018 [P] RPC payload and row schemas in `packages/core/src/schemas/rpc.ts` (onboarding answers, plan payload, log-meal payload, search row) and `packages/core/src/schemas/rows.ts` (profile, plan, meal, meal item rows mapped from `database.types.ts`)
-- [ ] T019 `apps/mobile/src/services/supabase.ts`: client with the LargeSecureStore adapter (AES key in SecureStore, ciphertext in AsyncStorage), `autoRefreshToken` started/stopped on `AppState`, env from `EXPO_PUBLIC_SUPABASE_URL` / `EXPO_PUBLIC_SUPABASE_KEY`; `apps/mobile/.env.example`
-- [ ] T020 [P] Providers in `apps/mobile/src/providers/`: `QueryProvider` (TanStack Query with `focusManager` on AppState), `ToastProvider`, `SessionProvider` (auth state from `supabase.auth.onAuthStateChange`, profile query)
-- [ ] T021 [P] UI primitives in `apps/mobile/src/components/ui/`: `Screen`, `Button` (primary lime on ink, secondary, ghost; loading state), `TextField` (label, error, numeric), `ErrorState`, `EmptyState`, `Toast`, `Sheet`; colors only from `theme.ts`
-- [ ] T022 Root layout `apps/mobile/src/app/_layout.tsx` with the redirect rules from contracts/screens.md (no session → welcome; unconfirmed e-mail → verify; setup incomplete → setup; else tabs) and the `(tabs)/_layout.tsx` tab bar (Bugün, Geçmiş, Planım, Profil)
+- [x] T019 `apps/mobile/src/services/supabase.ts`: client with the LargeSecureStore adapter (AES key in SecureStore, ciphertext in AsyncStorage), `autoRefreshToken` started/stopped on `AppState`, env from `EXPO_PUBLIC_SUPABASE_URL` / `EXPO_PUBLIC_SUPABASE_KEY`; `apps/mobile/.env.example`
+- [x] T020 [P] Providers in `apps/mobile/src/providers/`: `QueryProvider` (TanStack Query with `focusManager` on AppState), `ToastProvider`, `SessionProvider` (auth state from `supabase.auth.onAuthStateChange`, profile query)
+- [x] T021 [P] UI primitives in `apps/mobile/src/components/ui/`: `Screen`, `Button` (primary lime on ink, secondary, ghost; loading state), `TextField` (label, error, numeric), `ErrorState`, `EmptyState`, `Toast`, `Sheet`; colors only from `theme.ts`
+- [x] T022 Root layout `apps/mobile/src/app/_layout.tsx` with the redirect rules from contracts/screens.md (no session → welcome; unconfirmed e-mail → verify; setup incomplete → setup; else tabs) and the `(tabs)/_layout.tsx` tab bar (Bugün, Geçmiş, Planım, Profil). Done with expo-router `Stack.Protected` guards and an `index` anchor that redirects; routes are `/welcome`, `/setup/[step]`, `/today`, `/history`, `/plan`, `/profile` (placeholders until their stories)
 
 **Checkpoint**: RLS tests pass against the dev project; the app opens to the welcome route when signed out.
+
+Note: `Sheet` and `useToast` have no caller until US1, so knip reports them; Phase 2 and US1 go out as one pull request.
 
 Note (2026-10-09): until the dev project exists, the migrations were checked on a local PGlite database with a stubbed `auth` schema (29 checks: RLS for two users and anonymous, column privileges, totals trigger, Turkish normalization, plan floor and macro sum, one active plan). That check is not part of the repository; T015 runs the real suite.
 
