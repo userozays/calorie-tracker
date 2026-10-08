@@ -15,15 +15,15 @@ searching a food and typing the grams, shown on a daily dashboard. Reference app
 
 ### User Story 1 - Create an account and stay signed in (Priority: P1)
 
-A new user installs the app and creates an account with their e-mail and a password, with Sign in
-with Apple, or with Google. Next time they open the app they are still signed in. They can sign out,
+A new user installs the app and creates an account with their e-mail and a password, with Google,
+or on iPhone with Sign in with Apple. Next time they open the app they are still signed in. They can sign out,
 and if they forget their password they can reset it by e-mail.
 
 **Why this priority**: Every other feature stores personal data; nothing works without an account.
 
-**Independent Test**: Install the app on a clean device, create an account with each of the three
-methods, close and reopen the app, sign out, and reset a password; each step works on iOS and
-Android.
+**Independent Test**: Install the app on a clean device, create an account with each sign-in method
+offered on that platform, close and reopen the app, sign out, and reset a password; each step works
+on iOS and Android.
 
 **Acceptance Scenarios**:
 
@@ -157,8 +157,8 @@ day details match the logged data.
 
 **Accounts**
 
-- **FR-001**: Users MUST be able to create an account and sign in with e-mail and password, with
-  Sign in with Apple, and with Google, on both iOS and Android.
+- **FR-001**: Users MUST be able to create an account and sign in with e-mail and password and with
+  Google on iOS and Android, and with Sign in with Apple on iOS.
 - **FR-002**: E-mail sign-ups MUST confirm the address before the account can be used.
 - **FR-003**: Users MUST be able to reset a forgotten password by e-mail.
 - **FR-004**: The app MUST keep users signed in across restarts until they sign out, and MUST store
@@ -238,10 +238,14 @@ day details match the logged data.
   or meal items (0 leaks).
 - **SC-006**: For every combination of setup answers in the property tests, every day's calorie
   target is at or above the floor and the macros add up to the calories within rounding.
-- **SC-007**: All three sign-in methods work on both an iOS and an Android test device.
+- **SC-007**: Every sign-in method works on its platforms: e-mail and Google on an iOS and an
+  Android test device, Apple on an iOS test device.
 
 ## Assumptions
 
+- Sign in with Apple is offered on iOS only: Apple's rule that requires it applies to the App Store,
+  and on Android it would need a browser flow and a secret renewed every six months. Android users
+  sign in with e-mail or Google.
 - There is no guest mode: the app needs an account before any screen with personal data (as in
   Calyra). The welcome screen may show what the app does.
 - Turkish only and metric units only for this release.
