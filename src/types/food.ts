@@ -20,7 +20,7 @@ export type FoodProduct = z.infer<typeof foodProductSchema>;
 const grams100 = z.number().min(0).max(100);
 
 /** Per-100 g nutrition as printed on a pack: energy can't exceed pure fat, no macro exceeds 100 g. */
-export const labelMacrosSchema = z
+const labelMacrosSchema = z
   .object({ calories: z.number().min(0).max(900), protein: grams100, carbs: grams100, fat: grams100 })
   .refine((m) => m.protein + m.carbs + m.fat <= 100.5, "Protein, karbonhidrat ve yağ toplamı 100 g'ı geçemez");
 

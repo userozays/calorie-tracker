@@ -9,11 +9,11 @@ import type { FastingPreset, FastingSettings } from "@/types/fasting";
 export const MINUTES_PER_DAY = 1440;
 
 /** Eating hours per preset ("custom" uses the saved start and end). */
-export const PRESET_EATING_HOURS: Record<Exclude<FastingPreset, "custom">, number> = { "16:8": 8, "18:6": 6, "20:4": 4 };
+const PRESET_EATING_HOURS: Record<Exclude<FastingPreset, "custom">, number> = { "16:8": 8, "18:6": 6, "20:4": 4 };
 
 export const DEFAULT_FASTING: FastingSettings = { enabled: false, preset: "16:8", eatStart: 12 * 60, eatEnd: 20 * 60 };
 
-export type FastingPhase = "eating" | "fasting";
+type FastingPhase = "eating" | "fasting";
 
 export interface FastingState {
   phase: FastingPhase;
@@ -34,7 +34,7 @@ export function presetWindow(preset: FastingPreset, eatStart: number, eatEnd: nu
   return { eatStart, eatEnd: wrap(eatStart + PRESET_EATING_HOURS[preset] * 60) };
 }
 
-export const eatingMinutes = (s: Pick<FastingSettings, "eatStart" | "eatEnd">) => wrap(s.eatEnd - s.eatStart);
+const eatingMinutes = (s: Pick<FastingSettings, "eatStart" | "eatEnd">) => wrap(s.eatEnd - s.eatStart);
 
 function isEating(minute: number, s: Pick<FastingSettings, "eatStart" | "eatEnd">): boolean {
   return s.eatStart < s.eatEnd ? minute >= s.eatStart && minute < s.eatEnd : minute >= s.eatStart || minute < s.eatEnd;

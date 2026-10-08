@@ -3,7 +3,7 @@ import type { NutritionPlan } from "@/types/plan";
 import { DAILY_GOALS } from "./macros";
 import { targetsForDate, type DayType } from "./plan";
 
-export type TargetSource = "plan" | "default";
+type TargetSource = "plan" | "default";
 
 export interface ResolvedTargets {
   targets: Macros;

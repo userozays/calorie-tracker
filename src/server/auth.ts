@@ -5,7 +5,7 @@ import type { User } from "@prisma/client";
 import { db } from "./db";
 import type { PublicUser } from "@/types/auth";
 
-export const SESSION_COOKIE = "ct_session";
+const SESSION_COOKIE = "ct_session";
 /*
  * Sessions are short on purpose: the cookie has no expiry (the browser drops it when it closes),
  * the server ends a session after 30 minutes without a request, and after 12 hours in any case.

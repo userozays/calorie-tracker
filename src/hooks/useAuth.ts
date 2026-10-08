@@ -8,7 +8,7 @@ import type { PublicUser } from "@/types/auth";
 import { EMPTY_SETTINGS, type UserSettings } from "@/types/settings";
 import { useToast } from "./useToast";
 
-export type AuthStatus = "loading" | "guest" | "user";
+type AuthStatus = "loading" | "guest" | "user";
 /** The two auth pages: sign-in (/giris-yap) and sign-up (/kayit-ol). */
 export type AuthView = "login" | "register";
 

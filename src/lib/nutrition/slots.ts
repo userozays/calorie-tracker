@@ -18,7 +18,7 @@ export function slotForHour(hour: number): MealSlot {
  * Share of the day's calories per slot. Classic: 3 meals + snacks. 16:8: no breakfast; the first
  * meal of the window counts as lunch.
  */
-export const SLOT_SHARES: Record<MealPattern, Record<MealSlot, number>> = {
+const SLOT_SHARES: Record<MealPattern, Record<MealSlot, number>> = {
   classic: { breakfast: 0.25, lunch: 0.35, dinner: 0.3, snack: 0.1 },
   if168: { breakfast: 0, lunch: 0.45, dinner: 0.4, snack: 0.15 },
 };

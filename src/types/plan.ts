@@ -74,7 +74,7 @@ export const planInputsSchema = z
   );
 export type PlanInputs = z.infer<typeof planInputsSchema>;
 
-export const dayTargetsSchema = macrosSchema;
+const dayTargetsSchema = macrosSchema;
 export type DayTargets = z.infer<typeof dayTargetsSchema>;
 
 export const nutritionPlanSchema = z.object({
@@ -103,7 +103,7 @@ export const PLAN_TITLE_MAX = 40;
 export const PLAN_TITLE_SUGGESTIONS = ["Cut", "Bulk", "Koruma", "Mini cut", "Reverse diet"] as const;
 
 /** A real calendar day as `YYYY-MM-DD` (2027-02-30 is rejected). */
-export const dayKeySchema = z
+const dayKeySchema = z
   .string()
   .regex(/^\d{4}-\d{2}-\d{2}$/)
   .refine((s) => {

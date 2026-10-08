@@ -6,7 +6,7 @@ import path from "node:path";
 // (files added to `public/` after build aren't reliably served in production).
 const UPLOAD_DIR = path.join(process.cwd(), "uploads");
 
-export const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
+const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
 
 const EXT_BY_MIME: Record<string, string> = {
   "image/jpeg": "jpg",
@@ -19,7 +19,7 @@ export const MIME_BY_EXT: Record<string, string> = Object.fromEntries(
   Object.entries(EXT_BY_MIME).map(([mime, ext]) => [ext, mime]),
 );
 
-export const ALLOWED_MIME_TYPES = Object.keys(EXT_BY_MIME);
+const ALLOWED_MIME_TYPES = Object.keys(EXT_BY_MIME);
 
 /** Why an uploaded form field isn't an acceptable photo (message + HTTP status), or null if it is. */
 export function imageProblem(entry: FormDataEntryValue | null): { message: string; status: number } | null {
@@ -34,7 +34,7 @@ export function imageProblem(entry: FormDataEntryValue | null): { message: strin
 /** Only filenames we generate ourselves — also blocks path traversal. */
 const FILENAME_RE = /^[0-9a-f-]{36}\.(jpg|png|webp|gif)$/;
 
-export function isValidFilename(filename: string): boolean {
+function isValidFilename(filename: string): boolean {
   return FILENAME_RE.test(filename);
 }
 

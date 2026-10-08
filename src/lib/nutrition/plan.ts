@@ -12,7 +12,7 @@ import { PROTEIN_PER_KG, type DayTargets, type DietStyle, type NutritionPlan, ty
 const KCAL_PER_KG = 7700;
 
 /** Revised Harris-Benedict (Roza & Shizgal, 1984), kcal/day. */
-export function harrisBenedictBmr({ sex, weightKg, heightCm, age }: Pick<PlanInputs, "sex" | "weightKg" | "heightCm" | "age">): number {
+function harrisBenedictBmr({ sex, weightKg, heightCm, age }: Pick<PlanInputs, "sex" | "weightKg" | "heightCm" | "age">): number {
   return sex === "male"
     ? 88.362 + 13.397 * weightKg + 4.799 * heightCm - 5.677 * age
     : 447.593 + 9.247 * weightKg + 3.098 * heightCm - 4.33 * age;
@@ -44,7 +44,7 @@ export function weeksToGoal(inputs: Pick<PlanInputs, "weightKg" | "targetWeightK
   return Math.ceil(diff / perWeek);
 }
 
-export const KETO_CARBS = { min: 15, max: 30 } as const;
+const KETO_CARBS = { min: 15, max: 30 } as const;
 /** Low-carb days stop carbs here; the remaining energy goes to fat. */
 export const LOW_CARB_MAX_G = 100;
 const MIN_PLAN_KCAL = { male: 1500, female: 1200 } as const;
@@ -52,7 +52,7 @@ const MIN_PLAN_KCAL = { male: 1500, female: 1200 } as const;
 const PROTEIN_REFERENCE_BMI = 27;
 
 /** Body weight protein is calculated from (capped for high BMI). */
-export function proteinReferenceWeight({ weightKg, heightCm }: Pick<PlanInputs, "weightKg" | "heightCm">): number {
+function proteinReferenceWeight({ weightKg, heightCm }: Pick<PlanInputs, "weightKg" | "heightCm">): number {
   return Math.min(weightKg, PROTEIN_REFERENCE_BMI * (heightCm / 100) ** 2);
 }
 
@@ -88,7 +88,7 @@ const CYCLE_SHIFT = 0.12;
 const REST_FLOOR = 0.8;
 
 /** Training/rest-day targets whose weekly average equals `base.calories`. */
-export function cycleTargets(base: DayTargets, style: DietStyle, trainingDays: number): { training: DayTargets; rest: DayTargets } | null {
+function cycleTargets(base: DayTargets, style: DietStyle, trainingDays: number): { training: DayTargets; rest: DayTargets } | null {
   // Carbs follow training: less fat on training days, more on rest days (same protein).
   const restDays = 7 - trainingDays;
   if (trainingDays === 0 || restDays === 0) return null;
@@ -122,7 +122,7 @@ export function formulaPlan(inputs: PlanInputs): FormulaResult {
 const fmt = (n: number, digits = 0) => n.toLocaleString("tr-TR", { maximumFractionDigits: digits });
 
 /** A personalised 2–3 sentence strategy shown with the plan. */
-export function formulaSummary(inputs: PlanInputs, result: FormulaResult): string {
+function formulaSummary(inputs: PlanInputs, result: FormulaResult): string {
   const adj = goalAdjustment(inputs);
   const perKg = result.base.protein / inputs.weightKg;
   const sentences: string[] = [];
@@ -172,7 +172,7 @@ export function buildPlan(inputs: PlanInputs, meta: { id: string; createdAt: str
 }
 
 /** Monday = 0 … Sunday = 6. */
-export const weekdayIndex = (date: Date) => (date.getDay() + 6) % 7;
+const weekdayIndex = (date: Date) => (date.getDay() + 6) % 7;
 
 export type DayType = "training" | "rest";
 

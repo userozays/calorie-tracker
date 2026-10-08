@@ -25,7 +25,7 @@ export const WIZARD_STEPS = [
 ] as const;
 
 /** A sensible weekday spread for N sessions (0 = Monday). */
-export const DEFAULT_DAYS: Record<number, number[]> = {
+const DEFAULT_DAYS: Record<number, number[]> = {
   2: [0, 3],
   3: [0, 2, 4],
   4: [0, 1, 3, 4],
@@ -34,7 +34,7 @@ export const DEFAULT_DAYS: Record<number, number[]> = {
 };
 
 /** A daily deficit from this size up shows the content warning first (as does choosing 16:8). */
-export const SENSITIVE_DEFICIT_KCAL = 750;
+const SENSITIVE_DEFICIT_KCAL = 750;
 
 export type SensitiveWarning = { kind: "fasting" } | { kind: "deficit"; value: number };
 

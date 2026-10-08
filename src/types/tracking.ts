@@ -5,7 +5,7 @@ import { z } from "./zod";
 export const WEIGHT_LIMITS = { min: 30, max: 300 } as const;
 
 /** Local calendar day, `YYYY-MM-DD`. */
-export const dayKeySchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Tarih YYYY-AA-GG biçiminde olmalı");
+const dayKeySchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Tarih YYYY-AA-GG biçiminde olmalı");
 
 export const weightEntrySchema = z.object({
   id: z.string(),

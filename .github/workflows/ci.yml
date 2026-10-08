@@ -1,5 +1,5 @@
-# Runs on every pull request and every push to master: unit tests, types, lint and a production
-# build. The same commands the project asks for before a change is done (see CLAUDE.md).
+# Runs on every pull request and every push to master: unit tests, types, lint, unused code (knip)
+# and a production build. The same commands the project asks for before a change is done (see CLAUDE.md).
 name: CI
 
 on:
@@ -45,6 +45,9 @@ jobs:
 
       - name: Lint
         run: npm run lint
+
+      - name: Unused files, exports and dependencies
+        run: npm run knip
 
       - name: Build
         run: npm run build

@@ -24,7 +24,7 @@ export interface Region {
   box: { x0: number; y0: number; x1: number; y1: number };
 }
 
-export const REGIONS = {
+const REGIONS = {
   minScore: 0.85,
   /** Smaller proposals are crumbs or garnish; larger than this they're the whole frame. */
   minShare: 0.01,

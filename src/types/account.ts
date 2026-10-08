@@ -1,6 +1,6 @@
 import { z } from "./zod";
 
-export const EXPORT_FORMATS = ["json", "csv"] as const;
+const EXPORT_FORMATS = ["json", "csv"] as const;
 export const exportFormatSchema = z.enum(EXPORT_FORMATS);
 export type ExportFormat = z.infer<typeof exportFormatSchema>;
 

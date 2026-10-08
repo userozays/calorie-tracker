@@ -25,11 +25,11 @@ export const EMPTY_LABEL: LabelValues = {
 };
 
 /** g of salt -> mg of sodium (EU labels print salt = sodium x 2.5). */
-export const SALT_TO_SODIUM_MG = 400;
+const SALT_TO_SODIUM_MG = 400;
 const KJ_PER_KCAL = 4.184;
 
 /** Lower-cases (Turkish rules) and drops diacritics, so OCR slips like "yag"/"seker" still match. */
-export function fold(text: string): string {
+function fold(text: string): string {
   return text
     .toLocaleLowerCase("tr-TR")
     .replace(/ç/g, "c")
@@ -170,9 +170,6 @@ export function kcalFromMacros(v: Pick<LabelValues, "protein" | "carbs" | "fat">
   if (v.protein === null || v.carbs === null || v.fat === null) return null;
   return Math.round(v.protein * KCAL_PER_GRAM.protein + v.carbs * KCAL_PER_GRAM.carbs + v.fat * KCAL_PER_GRAM.fat);
 }
-
-/** The four fields a food can't be logged without. */
-export const REQUIRED_LABEL_FIELDS = ["calories", "protein", "carbs", "fat"] as const satisfies readonly LabelField[];
 
 export function missingFields(values: LabelValues): LabelField[] {
   return LABEL_FIELDS.filter((key) => values[key] === null);

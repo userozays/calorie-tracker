@@ -81,7 +81,7 @@ const STOPWORDS = new Set([
 
 const NUMBER_RE = /^(\d+(?:[.,]\d+)?)([a-zğüşıöç]*)$/;
 
-export function normalizeText(text: string): string {
+function normalizeText(text: string): string {
   return text
     .toLocaleLowerCase("tr-TR")
     .replace(/[^\p{L}\p{N}.,+\s]/gu, " ")

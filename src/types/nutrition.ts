@@ -27,7 +27,7 @@ export const microsSchema = z.object({
 export type Micros = z.infer<typeof microsSchema>;
 
 /** What role a food plays on the plate; drives the chips and colours in the breakdown. */
-export const FOOD_CATEGORIES = ["protein", "carb", "fat", "vegetable", "fruit", "dairy"] as const;
+const FOOD_CATEGORIES = ["protein", "carb", "fat", "vegetable", "fruit", "dairy"] as const;
 export const foodCategorySchema = z.enum(FOOD_CATEGORIES);
 export type FoodCategory = z.infer<typeof foodCategorySchema>;
 

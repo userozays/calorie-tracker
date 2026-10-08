@@ -1,8 +1,8 @@
 import { z } from "./zod";
 
-export const USERNAME_RE = /^[a-z0-9_.]{3,24}$/;
-export const PASSWORD_MIN = 8;
-export const PASSWORD_MAX = 128;
+const USERNAME_RE = /^[a-z0-9_.]{3,24}$/;
+const PASSWORD_MIN = 8;
+const PASSWORD_MAX = 128;
 
 /** Username + password, as typed. Usernames are case-insensitive and stored lower-cased. */
 export const credentialsSchema = z.object({
@@ -19,7 +19,7 @@ export const credentialsSchema = z.object({
 export type Credentials = z.infer<typeof credentialsSchema>;
 
 /** The signed-in account as the client sees it (never includes the password hash). */
-export const publicUserSchema = z.object({ id: z.string(), username: z.string() });
+const publicUserSchema = z.object({ id: z.string(), username: z.string() });
 export type PublicUser = z.infer<typeof publicUserSchema>;
 
 export const authResponseSchema = z.object({ user: publicUserSchema });

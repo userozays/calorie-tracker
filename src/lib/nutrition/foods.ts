@@ -203,7 +203,7 @@ const MICROS: Record<FoodId, [number, number, number, number]> = {
   hummus: [6, 0.3, 1.4, 380],
 };
 
-export function foodMicros(id: string): Micros | undefined {
+function foodMicros(id: string): Micros | undefined {
   const row = (MICROS as Record<string, [number, number, number, number]>)[id];
   return row ? { fiber: row[0], sugar: row[1], satFat: row[2], sodium: row[3] } : undefined;
 }

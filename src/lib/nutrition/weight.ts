@@ -8,7 +8,7 @@ import { dayToDate } from "../dates";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 /** Days averaged into each trend point. */
-export const TREND_WINDOW_DAYS = 7;
+const TREND_WINDOW_DAYS = 7;
 /** Days of history used for the weekly rate. */
 const RATE_WINDOW_DAYS = 28;
 const MIN_POINTS_FOR_RATE = 3;

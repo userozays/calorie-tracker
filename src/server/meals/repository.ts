@@ -49,7 +49,7 @@ function itemRows(items: MealItem[]) {
   }));
 }
 
-export function toMealDTO(meal: Meal & { items: MealItemRow[] }): MealDTO {
+function toMealDTO(meal: Meal & { items: MealItemRow[] }): MealDTO {
   const { id, name, calories, protein, carbs, fat, imageUrl, createdAt } = meal;
   return {
     id,

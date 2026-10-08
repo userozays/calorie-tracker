@@ -4,7 +4,7 @@ import { motion } from "motion/react";
 import { useId, useRef, type KeyboardEvent } from "react";
 import { SPRING } from "./motion";
 
-export interface ChipOption<T extends string> {
+interface ChipOption<T extends string> {
   id: T;
   label: string;
 }

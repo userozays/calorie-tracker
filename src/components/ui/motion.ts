@@ -1,4 +1,4 @@
-import type { Transition, Variants } from "motion/react";
+import type { Transition } from "motion/react";
 
 /*
  * Motion tokens (tofuhq "expressive motion"): springs for anything that moves or resizes, short
@@ -17,13 +17,6 @@ export const SPRING_BOUNCY: Transition = { type: "spring", stiffness: 380, dampi
 export const SPRING_NUMBER = { stiffness: 120, damping: 22, mass: 0.6 } as const;
 
 export const FADE: Transition = { duration: 0.2, ease: "easeOut" };
-
-/** Rise in from 8 px below, leave 8 px upwards (the 4 px grid × 2). */
-export const riseVariants: Variants = {
-  hidden: { opacity: 0, y: 8 },
-  shown: { opacity: 1, y: 0, transition: SPRING },
-  gone: { opacity: 0, y: -8, transition: FADE },
-};
 
 /** Delay for the n-th item of a staggered reveal, capped so long lists don't drag. */
 export const staggerDelay = (index: number, step = 0.04, max = 0.32) => Math.min(index * step, max);

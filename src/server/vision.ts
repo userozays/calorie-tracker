@@ -14,7 +14,7 @@ export interface VisionInput {
   mimeType: string;
 }
 
-export const NO_FOOD_MESSAGE = "Görselde yemek algılanamadı. Lütfen geçerli bir öğün gösterin.";
+const NO_FOOD_MESSAGE = "Görselde yemek algılanamadı. Lütfen geçerli bir öğün gösterin.";
 
 /** The photo doesn't show a meal (a person, a blank wall, a screenshot…), so nothing should be logged. */
 export class NoFoodError extends Error {
@@ -28,7 +28,7 @@ export class NoFoodError extends Error {
 }
 
 /** The provider answered, but not with usable data. */
-export class VisionOutputError extends Error {
+class VisionOutputError extends Error {
   constructor(readonly issues: string) {
     super("Görüntü analizi geçersiz veri döndürdü");
     this.name = "VisionOutputError";

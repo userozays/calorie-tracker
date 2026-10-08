@@ -4,7 +4,7 @@
  * on the generous side.
  */
 
-export const WATER_DEFAULT_ML = { male: 2500, female: 2000, unknown: 2000 } as const;
+const WATER_DEFAULT_ML = { male: 2500, female: 2000, unknown: 2000 } as const;
 
 /** One glass and one bottle. */
 export const WATER_STEPS = [250, 500] as const;

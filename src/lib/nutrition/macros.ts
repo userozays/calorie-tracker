@@ -8,7 +8,7 @@ export const DAILY_GOALS: Macros = {
   fat: 65, // g
 };
 
-export const ZERO_MACROS: Macros = { calories: 0, protein: 0, carbs: 0, fat: 0 };
+const ZERO_MACROS: Macros = { calories: 0, protein: 0, carbs: 0, fat: 0 };
 
 /** kcal per gram of each macronutrient (Atwater factors). */
 export const KCAL_PER_GRAM = { protein: 4, carbs: 4, fat: 9 } as const;
@@ -49,7 +49,7 @@ export function totalOfItems(items: readonly Pick<MealItem, "grams" | "per100g">
 }
 
 /** Most grams one meal component may have (matches mealItemSchema). */
-export const MAX_ITEM_GRAMS = 5000;
+const MAX_ITEM_GRAMS = 5000;
 
 /** Grams typed by the user ("150", "62,5"); null when empty or outside (0, 5000]. */
 export function parseGrams(text: string): number | null {
