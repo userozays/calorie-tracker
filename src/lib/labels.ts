@@ -4,10 +4,7 @@ import type { DietStyle, MealPattern, PlanGoal, StrengthSplit, TrainingStyle } f
 import type { ActivityLevel } from "@/types/profile";
 import type { BmiCategory } from "./nutrition/energy";
 
-/*
- * Turkish UI labels. The English `label`s in lib/nutrition/energy.ts are deliberately kept: they go
- * into FitBot's prompt and tool results, which the eval set was calibrated on.
- */
+/* Turkish UI labels. */
 
 export const BMI_LABELS: Record<BmiCategory["tone"], string> = {
   sky: "Zayıf",
@@ -72,7 +69,7 @@ export const DIET_STYLE_HINTS: Record<DietStyle, string> = {
   iifym: "Aynı makrolar; yemek seçiminde esneklik",
 };
 
-/** Turkish activity levels for the first-time setup (energy.ts keeps English labels for FitBot). */
+/** Activity levels for the first-time setup. */
 export const ACTIVITY_LEVEL_LABELS: Record<ActivityLevel, { title: string; hint: string }> = {
   sedentary: { title: "Hareketsiz", hint: "Masa başı, egzersiz yok" },
   light: { title: "Az hareketli", hint: "Haftada 1–3 gün hafif egzersiz" },

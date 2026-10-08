@@ -32,18 +32,17 @@ export function useOnboarding() {
   const { settings, replaceSettings } = useAuth();
   const toast = useToast();
   const router = useRouter();
-  // Prefill from a plan or calculator profile carried over from this device, if there is one.
+  // Prefill from an existing plan, if there is one.
   const [form, setForm] = useState<OnboardingForm>(() => {
     const plan = settings.nutritionPlan?.inputs;
-    const legacy = settings.profiles.find((p) => p.id === settings.activeProfileId) ?? null;
     const text = (n: number | null | undefined) => (n == null ? "" : String(n));
     return {
-      sex: plan?.sex ?? legacy?.gender ?? "male",
-      age: text(plan?.age ?? legacy?.age),
-      heightCm: text(plan?.heightCm ?? legacy?.heightCm),
-      weightKg: text(plan?.weightKg ?? legacy?.weightKg),
-      targetWeightKg: text(plan?.targetWeightKg ?? legacy?.targetWeightKg),
-      activity: legacy?.activity ?? "moderate",
+      sex: plan?.sex ?? "male",
+      age: text(plan?.age),
+      heightCm: text(plan?.heightCm),
+      weightKg: text(plan?.weightKg),
+      targetWeightKg: text(plan?.targetWeightKg),
+      activity: "moderate",
       dietStyle: plan?.dietStyle ?? "highProtein",
       fatPerKg: plan?.fatPerKg ?? FAT_PER_KG_RANGE.default,
     };

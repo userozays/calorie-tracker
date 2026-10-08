@@ -7,20 +7,14 @@ import type { NutritionPlan, PlanPeriod } from "@/types/plan";
 import { useAuth } from "./useAuth";
 
 /**
- * The account's plans: the main plan (from the plan wizard), the dated periods that replace it
- * (Cut, Bulk…), plus the legacy calculator profile and custom plan saved before the wizard
- * existed. Legacy data is read-only now: it keeps driving the targets until the user creates a plan.
+ * The account's plans: the main plan (from the plan wizard) and the dated periods that replace it
+ * (Cut, Bulk…).
  *
  * `plan` is the plan in effect today; `planOn(date)` gives the one for any other day.
  */
 export function useNutritionPlan() {
   const { settings, updateSettings } = useAuth();
   const { nutritionPlan: mainPlan, planPeriods: periods, mainPlanTitle } = settings;
-
-  const legacyProfile = useMemo(
-    () => settings.profiles.find((p) => p.id === settings.activeProfileId) ?? null,
-    [settings.profiles, settings.activeProfileId],
-  );
 
   const planOn = useCallback((date: Date) => planOnDate({ nutritionPlan: mainPlan, planPeriods: periods }, date), [mainPlan, periods]);
   const todayKey = dayKey(new Date());
@@ -49,8 +43,6 @@ export function useNutritionPlan() {
     mainPlanTitle: mainPlanTitle ?? (mainPlan ? defaultPlanTitle(mainPlan.inputs.goal) : null),
     periods,
     activePeriod,
-    legacyProfile,
-    legacyCustomPlan: settings.customPlan,
     savePlan,
     removePlan,
     saveMainTitle,

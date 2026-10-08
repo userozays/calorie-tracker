@@ -8,13 +8,6 @@ const nextConfig: NextConfig = {
   // Tesseract (label OCR) spawns a worker thread from its own files; bundling breaks that path.
   // transformers.js (photo recognition) loads ONNX Runtime's native binaries the same way.
   serverExternalPackages: ["tesseract.js", "@huggingface/transformers"],
-  // Old paths: the guest dashboard lived at /uygulama, "Gelişim & Analiz" at /trendler.
-  async redirects() {
-    return [
-      { source: "/uygulama", destination: "/panel", permanent: false },
-      { source: "/trendler", destination: "/gelisim", permanent: false },
-    ];
-  },
 };
 
 export default nextConfig;

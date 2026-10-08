@@ -2,7 +2,6 @@ import { Calculator, Moon, Pencil, Sparkles, Zap } from "lucide-react";
 import Link from "next/link";
 import { DIET_STYLE_LABELS, GOAL_LABELS, TRAINING_STYLE_LABELS } from "@/lib/labels";
 import type { DayType } from "@/lib/nutrition/plan";
-import type { TargetSource } from "@/lib/nutrition/targets";
 import type { Macros } from "@/types/nutrition";
 import type { NutritionPlan } from "@/types/plan";
 
@@ -10,16 +9,15 @@ interface Props {
   plan: NutritionPlan | null;
   /** The dated period today falls in (its plan is `plan`); null when the main plan applies. */
   period?: { id: string; title: string } | null;
-  /** Today's targets and where they come from (plan, legacy plan or defaults). */
+  /** Today's targets (the plan's, or the defaults when there is no plan). */
   targets: Macros;
-  source: TargetSource;
   dayType: DayType | null;
 }
 
 const fmt = (n: number) => n.toLocaleString("tr-TR");
 
 /** Dashboard summary of the active nutrition plan, with links into the plan wizard / tuning desk. */
-export default function ActivePlanCard({ plan, period = null, targets, source, dayType }: Props) {
+export default function ActivePlanCard({ plan, period = null, targets, dayType }: Props) {
   if (!plan) {
     return (
       <section aria-labelledby="plan-heading" className="card overflow-hidden">
@@ -36,14 +34,7 @@ export default function ActivePlanCard({ plan, period = null, targets, source, d
           </Link>
         </div>
         <div className="p-4 text-[13px] text-fg-muted">
-          {source === "default" ? (
-            <>Şu an varsayılan hedefler kullanılıyor ({fmt(targets.calories)} kcal).</>
-          ) : (
-            <>
-              Önceki planın ({source === "custom" ? "özel plan" : "hesaplayıcı"}) kullanılıyor: <strong className="text-fg">{fmt(targets.calories)} kcal</strong>,
-              P {targets.protein} g · K {targets.carbs} g · Y {targets.fat} g. Yeni plan oluşturduğunda bunun yerine geçer.
-            </>
-          )}
+          Şu an varsayılan hedefler kullanılıyor ({fmt(targets.calories)} kcal).
         </div>
       </section>
     );

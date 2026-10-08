@@ -15,7 +15,7 @@ import {
   type StrengthSplit,
   type TrainingStyle,
 } from "@/types/plan";
-import { inRange, type Profile } from "@/types/profile";
+import { inRange } from "@/types/profile";
 
 export const WIZARD_STEPS = [
   { id: "body", title: "Biyometri ve hedef" },
@@ -48,7 +48,7 @@ export interface WizardForm extends Omit<PlanInputs, "heightCm" | "weightKg" | "
 
 const toNumber = (v: string) => Number(v.replace(",", "."));
 
-function initialForm(previous: PlanInputs | null, legacy: Profile | null): WizardForm {
+function initialForm(previous: PlanInputs | null): WizardForm {
   if (previous) {
     return {
       ...previous,
@@ -59,11 +59,11 @@ function initialForm(previous: PlanInputs | null, legacy: Profile | null): Wizar
     };
   }
   return {
-    sex: legacy?.gender ?? "male",
-    heightCm: legacy ? String(legacy.heightCm) : "",
-    weightKg: legacy ? String(legacy.weightKg) : "",
-    age: legacy ? String(legacy.age) : "",
-    targetWeightKg: legacy?.targetWeightKg != null ? String(legacy.targetWeightKg) : "",
+    sex: "male",
+    heightCm: "",
+    weightKg: "",
+    age: "",
+    targetWeightKg: "",
     goal: "cut",
     intensity: INTENSITY_RANGE.cut.default,
     trainingStyle: "strength",
@@ -83,11 +83,10 @@ function initialForm(previous: PlanInputs | null, legacy: Profile | null): Wizar
  */
 export function usePlanWizard(
   previous: PlanInputs | null,
-  legacy: Profile | null,
   /** Whether the user already read the fasting / large-deficit warning, and how to remember it. */
   warningAck: { acknowledged: boolean; onAcknowledge: () => void },
 ) {
-  const [form, setForm] = useState<WizardForm>(() => initialForm(previous, legacy));
+  const [form, setForm] = useState<WizardForm>(() => initialForm(previous));
   const [warning, setWarning] = useState<SensitiveWarning | null>(null);
   // Guests can't save settings, so the acknowledgement also lives here for this visit.
   const [ackedHere, setAckedHere] = useState(false);

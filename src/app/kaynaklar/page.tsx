@@ -26,12 +26,6 @@ const SECTIONS: { heading: string; sources: Source[] }[] = [
         href: "https://doi.org/10.1093/ajcn/40.1.168",
       },
       {
-        title: "Mifflin MD, St Jeor ST ve ark. A new predictive equation for resting energy expenditure in healthy individuals.",
-        detail: "Am J Clin Nutr. 1990;51(2):241–247.",
-        use: "Eski profil hesaplayıcısı ve FitBot'un hesap araçları.",
-        href: "https://doi.org/10.1093/ajcn/51.2.241",
-      },
-      {
         title: "Hall KD. What is the required energy deficit per unit weight loss?",
         detail: "Int J Obes. 2008;32:573–576.",
         use: "Haftalık değişim tahmini için kullanılan ~7700 kcal/kg kuralının bir basitleştirme olduğunu hatırlatır; tahminler yaklaşıktır.",

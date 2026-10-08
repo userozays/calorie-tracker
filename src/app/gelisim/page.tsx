@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description: "Serilerin, hedefe göre kalorilerin ve makro ortalamaların.",
 };
 
-/** /gelisim ("Gelişim & Analiz", formerly /trendler): streaks, calories against the goal line and averages. */
+/** /gelisim ("Gelişim & Analiz"): streaks, calories against the goal line and averages. */
 export default async function ProgressPage() {
   await requireOnboarded();
   return (

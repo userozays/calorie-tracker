@@ -4,14 +4,8 @@ import { useMemo } from "react";
 import { resolveTargets } from "@/lib/nutrition/targets";
 import { useNutritionPlan } from "./useNutritionPlan";
 
-/**
- * Today's targets and where they come from: the wizard plan (training/rest day when cycling),
- * else the legacy custom plan or profile, else defaults.
- */
+/** Today's targets and where they come from: the plan in effect (training/rest day when cycling), else defaults. */
 export function useCalorieGoal() {
-  const { plan, legacyProfile, legacyCustomPlan } = useNutritionPlan();
-  return useMemo(
-    () => ({ ...resolveTargets(legacyProfile, legacyCustomPlan, plan, new Date()), plan, legacyProfile, legacyCustomPlan }),
-    [legacyProfile, legacyCustomPlan, plan],
-  );
+  const { plan } = useNutritionPlan();
+  return useMemo(() => ({ ...resolveTargets(plan, new Date()), plan }), [plan]);
 }

@@ -20,16 +20,14 @@ import { exportTracking } from "./tracking/repository";
  * and session primitives live in auth.ts.
  */
 
-/** Creates an account. `settings` carries plans a guest made on this device into it. */
-export async function registerUser(creds: Credentials, settings: UserSettings): Promise<User | "taken"> {
+/** Creates an account; settings stay empty until the first-time setup. */
+export async function registerUser(creds: Credentials): Promise<User | "taken"> {
   if (await db.user.findUnique({ where: { username: creds.username }, select: { id: true } })) return "taken";
-  const hasSettings = settings.profiles.length > 0 || settings.customPlan !== null;
   try {
     return await db.user.create({
       data: {
         username: creds.username,
         passwordHash: await hashPassword(creds.password),
-        settings: hasSettings ? JSON.stringify(settings) : null,
       },
     });
   } catch {

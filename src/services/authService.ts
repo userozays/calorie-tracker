@@ -15,8 +15,8 @@ export const authService = {
   },
 
   /** `settings`: plans saved on this device before sign-up, carried into the account. */
-  async register(username: string, password: string, settings: UserSettings | null): Promise<PublicUser> {
-    return (await request("/api/auth/register", authResponseSchema, { json: { username, password, settings } })).user;
+  async register(username: string, password: string): Promise<PublicUser> {
+    return (await request("/api/auth/register", authResponseSchema, { json: { username, password } })).user;
   },
 
   logout(): Promise<void> {

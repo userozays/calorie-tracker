@@ -3,12 +3,10 @@
 import { ArrowLeft, ArrowRight, Calculator } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
-import { useNutritionPlan } from "@/hooks/useNutritionPlan";
 import { usePlanBuilder, type BuilderTarget } from "@/hooks/usePlanBuilder";
 import { WIZARD_STEPS, usePlanWizard } from "@/hooks/usePlanWizard";
 import { ROUTES } from "@/lib/routes";
 import type { NutritionPlan } from "@/types/plan";
-import type { Profile } from "@/types/profile";
 import SiteHeader from "../layout/SiteHeader";
 import PlanPeriodDialog from "../plans/PlanPeriodDialog";
 import LivePreview from "./LivePreview";
@@ -23,7 +21,6 @@ import WizardProgress from "./WizardProgress";
 /** The /plan screen: wizard -> tuning desk. */
 export default function PlanBuilder({ startInReview, target }: { startInReview: boolean; target: BuilderTarget }) {
   const { status } = useAuth();
-  const { legacyProfile } = useNutritionPlan();
   const builder = usePlanBuilder(startInReview, target);
   const { phase, startingPlan: plan } = builder;
   const activateLabel =
@@ -68,7 +65,7 @@ export default function PlanBuilder({ startInReview, target }: { startInReview: 
             </div>
           ) : (
             // Keyed on the saved plan so the wizard starts from its answers once the account loads.
-            <Wizard key={plan?.id ?? legacyProfile?.id ?? "new"} previous={plan} legacy={legacyProfile} onGenerate={builder.generate} />
+            <Wizard key={plan?.id ?? "new"} previous={plan} onGenerate={builder.generate} />
           )}
         </div>
       </main>
@@ -85,15 +82,13 @@ export default function PlanBuilder({ startInReview, target }: { startInReview: 
 
 function Wizard({
   previous,
-  legacy,
   onGenerate,
 }: {
   previous: NutritionPlan | null;
-  legacy: Profile | null;
   onGenerate: (inputs: NonNullable<ReturnType<typeof usePlanWizard>["inputs"]>) => void;
 }) {
   const { settings, updateSettings } = useAuth();
-  const w = usePlanWizard(previous?.inputs ?? null, legacy, {
+  const w = usePlanWizard(previous?.inputs ?? null, {
     acknowledged: settings.sensitiveWarningAck,
     onAcknowledge: () => updateSettings((current) => ({ ...current, sensitiveWarningAck: true })),
   });

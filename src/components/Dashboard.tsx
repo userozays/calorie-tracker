@@ -47,7 +47,6 @@ import DailyInsights from "./progress/DailyInsights";
 import MicroPanel from "./progress/MicroPanel";
 import WaterCard from "./progress/WaterCard";
 import ConfirmDialog from "./ui/ConfirmDialog";
-import CustomPlanBadge from "./ui/CustomPlanBadge";
 import { cardEnter } from "./ui/motion";
 import Segmented, { type SegmentedItem } from "./ui/Segmented";
 
@@ -115,8 +114,6 @@ export default function Dashboard() {
       )}
       {dayType === "training" ? "Antrenman günü" : "Dinlenme günü"}
     </span>
-  ) : source === "custom" ? (
-    <CustomPlanBadge />
   ) : undefined;
 
   const pickSlot = (slot: MealSlot) => {
@@ -258,7 +255,6 @@ export default function Dashboard() {
                   plan={plan}
                   period={plans.activePeriod}
                   targets={targets}
-                  source={source}
                   dayType={dayType}
                 />
               </ErrorBoundary>
