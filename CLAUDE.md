@@ -6,7 +6,16 @@ Mobile-first web app for logging meals. Users sign up with a username + password
 
 **Stack:** Next.js 16 (App Router, TypeScript strict) · Tailwind CSS v4 · Zod 4 · Prisma 6 + SQLite · `@node-rs/argon2` · Lucide icons · transformers.js (CLIP + SlimSAM) for photos · local Ollama for the quick-bar matcher.
 
-**Constitution:** `.specify/memory/constitution.md` sets the scope and the non-negotiable rules (Spec Kit). Where this file and the constitution disagree, the constitution wins. The target state it describes (Postgres on Supabase, Vercel, one hosted vision model instead of in-process ML and Ollama) is being reached feature by feature; this file describes the code as it is today. New work goes through the Spec Kit skills in `.claude/skills/` (`/speckit-specify` → `/speckit-plan` → `/speckit-tasks` → `/speckit-implement`).
+## Status: moving to a mobile app (read this first)
+
+The product is becoming a **native iOS and Android app (Expo SDK 57, expo-router) on Supabase**, with **no web front end**. Everything below this section describes the **current Next.js web app**, which is being retired; do not build new features on it.
+
+- **Rules:** `.specify/memory/constitution.md` (v2.0.0) wins over this file. Monorepo: `apps/mobile` (Expo app), `packages/core` (`@calorie/core`: pure nutrition logic + Zod schemas, shared by the app and Edge Functions), `supabase/` (migrations, Row Level Security on every table, Edge Functions). Accounts: Supabase Auth with e-mail, Google, and Sign in with Apple on iOS only.
+- **Plan of work:** `specs/ROADMAP.md`: 001 mobile foundation → 002 food database + barcode → 003 AI logging → 004 tracking → 005 account and stores → 006 subscription (RevenueCat).
+- **Current feature:** `specs/001-mobile-foundation/` (spec, plan, research, data model, contracts, quickstart, `tasks.md` with 60 tasks). Its Phase 1 deletes this Next.js app and moves the kept logic into `packages/core`; T058 then rewrites this file for the monorepo.
+- **AI:** one hosted vision model behind one Edge Function, chosen on a Turkish food eval set; the owner decided to start with **Gemini** (paid tier for users, free tier only for development). No on-device or in-process models, no Ollama.
+- **Out of scope:** FitBot, the AI plan strategy, any website.
+- **Workflow:** Spec Kit skills in `.claude/skills/` (`/speckit-specify` → `/speckit-plan` → `/speckit-tasks` → `/speckit-implement`); small pull requests, one phase or story each.
 
 **Language:** the UI is Turkish (`<html lang="tr">`, `LOCALE = "tr-TR"` in `src/lib/dates.ts`). Write all user-facing text, API error messages and validation messages in Turkish. Code, comments and docs are English.
 
