@@ -1,5 +1,5 @@
 import type { MealSlot } from "./schemas/meal.ts";
-import type { FoodCategory, MacroKey, MicroKey } from "./schemas/nutrition.ts";
+import type { MacroKey } from "./schemas/nutrition.ts";
 import type { DietStyle, MealPattern, PlanGoal, StrengthSplit, TrainingStyle } from "./schemas/plan.ts";
 import type { ActivityLevel } from "./schemas/profile.ts";
 import type { BmiCategory } from "./nutrition/energy.ts";
@@ -11,15 +11,6 @@ export const BMI_LABELS: Record<BmiCategory["tone"], string> = {
   emerald: "Normal",
   amber: "Fazla kilolu",
   red: "Obez",
-};
-
-export const CATEGORY_LABELS: Record<FoodCategory, string> = {
-  protein: "Protein",
-  carb: "Karbonhidrat",
-  fat: "Yağ / sos",
-  vegetable: "Sebze",
-  fruit: "Meyve",
-  dairy: "Süt ürünü",
 };
 
 export const MACRO_LABELS: Record<MacroKey, string> = {
@@ -91,11 +82,4 @@ export const SLOT_LABELS: Record<MealSlot, string> = {
   lunch: "Öğle yemeği",
   dinner: "Akşam yemeği",
   snack: "Ara öğün",
-};
-
-export const MICRO_LABELS: Record<MicroKey, { label: string; unit: string }> = {
-  fiber: { label: "Lif", unit: "g" },
-  sugar: { label: "Şeker", unit: "g" },
-  satFat: { label: "Doymuş yağ", unit: "g" },
-  sodium: { label: "Sodyum", unit: "mg" },
 };

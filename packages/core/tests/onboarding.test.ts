@@ -14,6 +14,7 @@ const base: OnboardingInput = {
   activity: "moderate",
   dietStyle: "highProtein",
   fatPerKg: 1.2,
+  timeZone: "Europe/Istanbul",
 };
 
 describe("first-time setup", () => {

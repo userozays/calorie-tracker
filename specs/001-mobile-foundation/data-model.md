@@ -7,11 +7,14 @@ labels come from `@calorie/core`.
 
 ## Enums
 
+Enum values are the same strings `@calorie/core` uses (camelCase where the core does), so rows map without translation.
+
+
 | Enum | Values |
 |---|---|
 | `sex` | `male`, `female` |
-| `activity_level` | `sedentary`, `light`, `moderate`, `active`, `very_active` |
-| `diet_style` | `high_protein`, `low_carb`, `keto`, `iifym` |
+| `activity_level` | `sedentary`, `light`, `moderate`, `active`, `veryActive` |
+| `diet_style` | `highProtein`, `lowCarb`, `keto`, `iifym` |
 | `meal_slot` | `breakfast`, `lunch`, `dinner`, `snack` |
 
 ## profiles

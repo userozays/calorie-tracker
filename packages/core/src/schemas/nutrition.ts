@@ -14,34 +14,26 @@ export const macrosSchema = z.object({
 });
 export type Macros = z.infer<typeof macrosSchema>;
 
-/** Optional micronutrients, per 100 g like the macros. Sodium in mg, the rest in g. */
-export const MICRO_KEYS = ["fiber", "sugar", "satFat", "sodium"] as const;
-export type MicroKey = (typeof MICRO_KEYS)[number];
-
-export const microsSchema = z.object({
-  fiber: amount.optional(),
-  sugar: amount.optional(),
-  satFat: amount.optional(),
-  sodium: amount.optional(),
+/** A food's values per 100 g: at most 900 kcal (pure fat) and 100 g of any macro. */
+export const per100gSchema = z.object({
+  calories: z.number().min(0).max(900),
+  protein: z.number().min(0).max(100),
+  carbs: z.number().min(0).max(100),
+  fat: z.number().min(0).max(100),
 });
-export type Micros = z.infer<typeof microsSchema>;
 
-/** What role a food plays on the plate; drives the chips and colours in the breakdown. */
-const FOOD_CATEGORIES = ["protein", "carb", "fat", "vegetable", "fruit", "dairy"] as const;
-export const foodCategorySchema = z.enum(FOOD_CATEGORIES);
-export type FoodCategory = z.infer<typeof foodCategorySchema>;
+/** Most grams one meal item may have (FR-013); the database checks the same bound. */
+export const MAX_ITEM_GRAMS = 5000;
+export const gramsSchema = z.number().positive().max(MAX_ITEM_GRAMS);
 
 /**
- * One component of a meal: a food on a photographed plate or an item from the quick-entry bar.
- * Nutrition is stored per 100 g so the portion can be rescaled anywhere (slider, server) with the
- * same pure function (`itemMacros`).
+ * One food in a meal. Nutrition is per 100 g, copied from the food database when the item is
+ * saved, so the portion can be rescaled with the same pure function (`itemMacros`).
  */
 export const mealItemSchema = z.object({
+  foodId: z.string().min(1).max(64),
   name: z.string().trim().min(1).max(80),
-  category: foodCategorySchema,
-  grams: z.number().positive().max(5000),
-  per100g: macrosSchema,
-  /** Fibre, sugar, saturated fat and sodium per 100 g, where known. */
-  micros: microsSchema.optional(),
+  grams: gramsSchema,
+  per100g: per100gSchema,
 });
 export type MealItem = z.infer<typeof mealItemSchema>;

@@ -5,7 +5,9 @@ tables directly under RLS; every write that must be atomic or validated goes thr
 `security definer` function called with `supabase.rpc(...)`. All functions check
 `auth.uid() is not null` and act only on the caller's rows. Inputs and outputs are validated in the
 app with the matching `@calorie/core` schema (constitution II). Errors are raised with a stable
-`code` the app maps to Turkish messages.
+`code` the app maps to Turkish messages. JSON payloads use the core schemas' camelCase keys
+(`heightCm`, `localDate`, `foodId`); rows come back snake_case and are mapped by
+`@calorie/core/schemas/rows`.
 
 ## Access matrix (authenticated role)
 
@@ -22,8 +24,8 @@ Anonymous role: no access to any table.
 ## Functions
 
 ### `complete_onboarding(answers jsonb, plan jsonb) → profiles`
-- `answers`: `{ sex, age, height_cm, weight_kg, goal_weight_kg|null, activity_level, diet_style,
-  fat_per_kg, time_zone }` (core `onboardingAnswersSchema`).
+- `answers`: `{ sex, age, heightCm, weightKg, targetWeightKg, activity, dietStyle, fatPerKg, timeZone }`
+  (core `onboardingSchema`).
 - `plan`: the plan the app built with `buildPlan` from those answers (core `nutritionPlanSchema`).
 - Updates the profile (`birth_year` = current year − age), inserts the plan as active through the
   same path as `save_plan`, sets `onboarding_completed = true`; one transaction.
@@ -41,7 +43,7 @@ Anonymous role: no access to any table.
 - Errors: `no_items`, `too_many_items`, `invalid_grams`, `unknown_food`, `date_out_of_range`,
   `onboarding_required`.
 
-### `search_foods(q text, max_results int default 20) → setof (food_id, name_tr, matched_alias, typical_portion_g, kcal_per_100g, score)`
+### `search_foods(q text, max_results int default 20) → setof (food_id, name_tr, matched_alias, typical_portion_g, kcal_per_100g, protein_per_100g, carbs_per_100g, fat_per_100g, score)`
 - `q` is the text as typed plus the suffix candidates from core `searchStems` ("tavuğu" → "tavuk"),
   space-separated, 1–60 chars; the function normalizes it with `normalize_tr`.
 - Ranking: exact alias match, then prefix match, then trigram similarity ≥ 0.3; one row per food

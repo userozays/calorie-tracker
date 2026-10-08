@@ -1,4 +1,4 @@
-import type { Macros, MealItem } from "../schemas/nutrition.ts";
+import { MAX_ITEM_GRAMS, type Macros, type MealItem } from "../schemas/nutrition.ts";
 
 /** Fallback targets, used until the user fills in their profile. */
 export const DAILY_GOALS: Macros = {
@@ -47,9 +47,6 @@ export function itemMacros(item: Pick<MealItem, "grams" | "per100g">): Macros {
 export function totalOfItems(items: readonly Pick<MealItem, "grams" | "per100g">[]): Macros {
   return roundMacros(sumMacros(items.map(itemMacros)));
 }
-
-/** Most grams one meal component may have (matches mealItemSchema). */
-const MAX_ITEM_GRAMS = 5000;
 
 /** Grams typed by the user ("150", "62,5"); null when empty or outside (0, 5000]. */
 export function parseGrams(text: string): number | null {
