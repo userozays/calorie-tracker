@@ -61,10 +61,10 @@ Notes from Phase 1: dependencies listed in T005 that nothing imports yet were re
 
 **⚠️ CRITICAL**: No user story work begins until this phase is complete.
 
-- [ ] T011 Write `supabase/tests/helpers.ts`: admin client from env, `createTestUser()` / `deleteTestUser()` via the admin API, `clientFor(user)` signed in through supabase-js, cleanup in `after()` hooks
-- [ ] T012 Write `supabase/tests/rls.test.ts` (must fail first): with users A and B, B cannot select, update or delete A's rows in `profiles`, `nutrition_plans`, `meals`, `meal_items`; anonymous clients read nothing; `foods`/`food_aliases` are readable but not writable
-- [ ] T013 Migration `supabase/migrations/20261009000100_schema.sql`: enums, the six tables from data-model.md with checks and indexes, RLS enabled with the policies from contracts/database-api.md, `revoke update (onboarding_completed)` on `profiles` from `authenticated`, `pg_trgm` extension
-- [ ] T014 Migration `supabase/migrations/20261009000200_triggers.sql`: `handle_new_user` (insert profile on `auth.users` insert), `meal_items` before-trigger (set `user_id` from the meal, reject foreign meals, copy the per-100 g snapshot from `foods`), after-trigger recomputing the meal's four totals, `nutrition_plans` validation trigger (per-day floor by sex, macro sum within max(10 kcal, 1 %)), `updated_at` touch triggers
+- [x] T011 Write `supabase/tests/helpers.ts`: admin client from env, `createTestUser()` / `deleteTestUser()` via the admin API, `clientFor(user)` signed in through supabase-js, cleanup in `after()` hooks
+- [x] T012 Write `supabase/tests/rls.test.ts` (must fail first): with users A and B, B cannot select, update or delete A's rows in `profiles`, `nutrition_plans`, `meals`, `meal_items`; anonymous clients read nothing; `foods`/`food_aliases` are readable but not writable
+- [x] T013 Migration `supabase/migrations/20261009000100_schema.sql`: enums, the six tables from data-model.md with checks and indexes, RLS enabled with the policies from contracts/database-api.md, `revoke update (onboarding_completed)` on `profiles` from `authenticated`, `pg_trgm` extension
+- [x] T014 Migration `supabase/migrations/20261009000200_triggers.sql`: `handle_new_user` (insert profile on `auth.users` insert), `meal_items` before-trigger (set `user_id` from the meal, reject foreign meals, copy the per-100 g snapshot from `foods`), after-trigger recomputing the meal's four totals, `nutrition_plans` validation trigger (per-day floor by sex, macro sum within max(10 kcal, 1 %)), `updated_at` touch triggers
 - [ ] T015 Apply migrations to the dev project (`npx supabase link`, `npx supabase db push`), generate `packages/core/src/db/database.types.ts` with `npx supabase gen types typescript --linked`, and make T012 pass
 - [x] T016 [P] Fix the plan engine floor in `packages/core/src/nutrition/plan.ts` (every cycling day ≥ the sex floor; the summary and weeks-to-goal use the real deficit `base.calories − tdee`) and in `packages/core/src/nutrition/planTuning.ts` (calorie slider minimum = sex floor; macros never exceed calories)
 - [x] T017 [P] Property tests `packages/core/tests/plan.property.test.ts` with fast-check: for any valid `PlanInputs`, every day (base, training, rest) ≥ floor and protein·4 + carbs·4 + fat·9 = calories within rounding; for any tuning action the same holds (SC-006)
@@ -75,6 +75,8 @@ Notes from Phase 1: dependencies listed in T005 that nothing imports yet were re
 - [ ] T022 Root layout `apps/mobile/src/app/_layout.tsx` with the redirect rules from contracts/screens.md (no session → welcome; unconfirmed e-mail → verify; setup incomplete → setup; else tabs) and the `(tabs)/_layout.tsx` tab bar (Bugün, Geçmiş, Planım, Profil)
 
 **Checkpoint**: RLS tests pass against the dev project; the app opens to the welcome route when signed out.
+
+Note (2026-10-09): until the dev project exists, the migrations were checked on a local PGlite database with a stubbed `auth` schema (29 checks: RLS for two users and anonymous, column privileges, totals trigger, Turkish normalization, plan floor and macro sum, one active plan). That check is not part of the repository; T015 runs the real suite.
 
 ---
 
@@ -144,7 +146,7 @@ totals always equal the remaining items.
 ### Implementation for User Story 3
 
 - [ ] T042 [P] [US3] `packages/core/src/search/normalize.ts`: `normalizeTr` and `searchStems` (Turkish suffix candidates, built from the old quickParse alias handling via `git show`)
-- [ ] T043 [US3] Migration `supabase/migrations/20261009000400_search.sql`: `normalize_tr(text)` IMMUTABLE, generated `food_aliases.alias_normalized`, GIN trigram index, `search_foods(q, max_results)`
+- [ ] T043 [US3] Migration `supabase/migrations/20261009000400_search.sql`: `search_foods(q, max_results)` (`normalize_tr`, the generated `alias_normalized` column and its trigram index already ship with the schema migration, T013, because the table depends on them)
 - [ ] T044 [US3] Migration `supabase/migrations/20261009000500_log_meal.sql`: `log_meal(slot, local_date, time_zone, name, items)` with the error codes from contracts/database-api.md
 - [ ] T045 [US3] Migration `supabase/migrations/20261009000600_seed_curated_foods.sql`: the ~80 curated foods and aliases from the old `src/lib/nutrition/foods.ts` (via `git show`), with the corrected values from the review (kaşar, white bread, simit) and slug ids
 - [ ] T046 [US3] `apps/mobile/src/services/foodService.ts` (`search`) and `mealService.ts` (`logMeal`, `updateItemGrams`, `removeItem`, `deleteMeal`, `getDayMeals`), validating rows with core schemas

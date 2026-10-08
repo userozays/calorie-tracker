@@ -3,5 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Supabase migrations and (from T011) the database tests that run against the dev project."
+  "description": "Supabase migrations and (from T011) the database tests that run against the dev project.",
+  "devDependencies": {
+    "@supabase/supabase-js": "^2.117.3",
+    "@types/node": "^22.20.5",
+    "tsx": "^4.23.15"
+  },
+  "scripts": {
+    "test": "tsx --test tests/*.test.ts",
+    "typecheck": "tsc --noEmit"
+  }
 }
