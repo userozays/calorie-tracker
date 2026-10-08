@@ -35,10 +35,16 @@ export function weeklyChangeKg(adjustmentKcal: number): number {
   return Math.round(((adjustmentKcal * 7) / KCAL_PER_KG) * 100) / 100;
 }
 
-/** Weeks to reach the target weight at this pace, or null if not applicable. */
-export function weeksToGoal(inputs: Pick<PlanInputs, "weightKg" | "targetWeightKg" | "goal" | "intensity">): number | null {
+/**
+ * Weeks to reach the target weight, or null if not applicable. Pass the plan's real daily change
+ * (base calories − TDEE) when the calorie floor may have shrunk the deficit.
+ */
+export function weeksToGoal(
+  inputs: Pick<PlanInputs, "weightKg" | "targetWeightKg" | "goal" | "intensity">,
+  dailyChangeKcal: number = goalAdjustment(inputs),
+): number | null {
   if (inputs.targetWeightKg == null || inputs.goal === "maintain") return null;
-  const perWeek = weeklyChangeKg(goalAdjustment(inputs));
+  const perWeek = weeklyChangeKg(dailyChangeKcal);
   const diff = inputs.targetWeightKg - inputs.weightKg;
   if (perWeek === 0 || Math.sign(diff) !== Math.sign(perWeek)) return null;
   return Math.ceil(diff / perWeek);
@@ -47,7 +53,12 @@ export function weeksToGoal(inputs: Pick<PlanInputs, "weightKg" | "targetWeightK
 const KETO_CARBS = { min: 15, max: 30 } as const;
 /** Low-carb days stop carbs here; the remaining energy goes to fat. */
 export const LOW_CARB_MAX_G = 100;
+/** The lowest calorie target any day of a plan may have (constitution III). */
 const MIN_PLAN_KCAL = { male: 1500, female: 1200 } as const;
+
+export function calorieFloor(sex: PlanInputs["sex"]): number {
+  return MIN_PLAN_KCAL[sex];
+}
 /** Above this BMI, protein is based on the weight at this BMI (lean-mass proxy). */
 const PROTEIN_REFERENCE_BMI = 27;
 
@@ -65,19 +76,21 @@ export function baseGrams(inputs: Pick<PlanInputs, "weightKg" | "heightCm" | "fa
 /**
  * Macros for a calorie target: protein and fat fixed in grams (4 and 9 kcal/g), carbs (4 kcal/g)
  * fill the rest. Keto keeps carbs at 15–30 g and low-carb at most 100 g; fat absorbs the
- * difference. If protein + fat alone exceed the calories, carbs drop to 0 and fat gives way.
+ * difference. If protein + fat alone exceed the calories, carbs drop to 0 and fat gives way; if
+ * protein alone would, it is capped. The grams always add up to the calories (within rounding).
  */
 export function macrosFor(kcal: number, grams: { protein: number; fat: number }, style: DietStyle): DayTargets {
-  const protein = grams.protein;
+  const protein = Math.min(grams.protein, kcal / 4);
   let fat = grams.fat;
   let carbs = (kcal - protein * 4 - fat * 9) / 4;
   if (style === "keto" || (style === "lowCarb" && carbs > LOW_CARB_MAX_G)) {
     carbs = style === "keto" ? Math.min(KETO_CARBS.max, Math.max(KETO_CARBS.min, carbs)) : LOW_CARB_MAX_G;
     fat = (kcal - protein * 4 - carbs * 4) / 9;
   }
-  if (carbs < 0) {
-    carbs = 0;
-    fat = (kcal - protein * 4) / 9;
+  if (carbs < 0 || fat < 0) {
+    // Not enough energy for the carb rule: give what is left to fat, or to carbs if fat ran out.
+    fat = Math.max(0, (kcal - protein * 4 - Math.max(0, carbs) * 4) / 9);
+    carbs = Math.max(0, (kcal - protein * 4 - fat * 9) / 4);
   }
   return { calories: Math.round(kcal), protein: Math.round(protein), carbs: Math.round(carbs), fat: Math.max(0, Math.round(fat)) };
 }
@@ -87,14 +100,21 @@ const CYCLE_SHIFT = 0.12;
 /** Rest days never drop below this share of the average. */
 const REST_FLOOR = 0.8;
 
-/** Training/rest-day targets whose weekly average equals `base.calories`. */
-function cycleTargets(base: DayTargets, style: DietStyle, trainingDays: number): { training: DayTargets; rest: DayTargets } | null {
+/**
+ * Training/rest-day targets whose weekly average equals `base.calories`. Rest days never go below
+ * the calorie floor; when the floor binds, training days get only what keeps the average.
+ */
+function cycleTargets(base: DayTargets, style: DietStyle, trainingDays: number, floor: number): { training: DayTargets; rest: DayTargets } | null {
   // Carbs follow training: less fat on training days, more on rest days (same protein).
   const restDays = 7 - trainingDays;
   if (trainingDays === 0 || restDays === 0) return null;
   const shift = Math.min(CYCLE_SHIFT, ((1 - REST_FLOOR) * restDays) / trainingDays);
-  const training = base.calories * (1 + shift);
-  const rest = (7 * base.calories - trainingDays * training) / restDays;
+  let training = base.calories * (1 + shift);
+  let rest = (7 * base.calories - trainingDays * training) / restDays;
+  if (rest < floor) {
+    rest = floor;
+    training = (7 * base.calories - restDays * floor) / trainingDays;
+  }
   return {
     training: macrosFor(training, { protein: base.protein, fat: base.fat * 0.8 }, style),
     rest: macrosFor(rest, { protein: base.protein, fat: base.fat * 1.3 }, style),
@@ -113,9 +133,10 @@ export function formulaPlan(inputs: PlanInputs): FormulaResult {
   const bmr = harrisBenedictBmr(inputs);
   const days = inputs.trainingStyle === "sedentary" ? 0 : inputs.trainingDays.length;
   const tdee = bmr * activityFactor(inputs.trainingStyle, days);
-  const kcal = Math.max(MIN_PLAN_KCAL[inputs.sex], tdee + goalAdjustment(inputs));
+  const floor = calorieFloor(inputs.sex);
+  const kcal = Math.max(floor, tdee + goalAdjustment(inputs));
   const base = macrosFor(kcal, baseGrams(inputs), inputs.dietStyle);
-  const cycle = inputs.cycling ? cycleTargets(base, inputs.dietStyle, days) : null;
+  const cycle = inputs.cycling ? cycleTargets(base, inputs.dietStyle, days, floor) : null;
   return { bmr: Math.round(bmr), tdee: Math.round(tdee), base, cycle };
 }
 
@@ -123,11 +144,16 @@ const fmt = (n: number, digits = 0) => n.toLocaleString("tr-TR", { maximumFracti
 
 /** A personalised 2–3 sentence strategy shown with the plan. */
 function formulaSummary(inputs: PlanInputs, result: FormulaResult): string {
-  const adj = goalAdjustment(inputs);
+  // The real daily change: the calorie floor can make it smaller than the slider's value.
+  const adj = result.base.calories - result.tdee;
   const perKg = result.base.protein / inputs.weightKg;
   const sentences: string[] = [];
 
-  if (inputs.goal === "cut") {
+  if (inputs.goal === "cut" && adj > -50) {
+    sentences.push(
+      `Güvenli alt sınır günde ${fmt(calorieFloor(inputs.sex))} kcal; bu yüzden açık yalnızca ~${fmt(Math.max(0, -adj))} kcal ve kilo kaybı yavaş olur. ${fmt(result.base.protein)} g protein (${fmt(perKg, 1)} g/kg) kas kütleni korur.`,
+    );
+  } else if (inputs.goal === "cut") {
     sentences.push(
       `Günlük yaklaşık ${fmt(-adj)} kcal açıkla haftada ~${fmt(Math.abs(weeklyChangeKg(adj)), 2)} kg yağ kaybı hedefliyoruz; ${fmt(result.base.protein)} g protein (${fmt(perKg, 1)} g/kg) açıktayken kas kütleni korur.`,
     );
