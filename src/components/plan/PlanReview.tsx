@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Check, Moon, RotateCcw, TriangleAlert, Zap } from "lucide-react";
+import { ArrowLeft, Calculator, Check, Moon, RotateCcw, Zap } from "lucide-react";
 import { usePlanTuner, type TunerDay } from "@/hooks/usePlanTuner";
 import { BMI_LABELS } from "@/lib/labels";
 import { bmiCategory, calculateBmi } from "@/lib/nutrition/energy";
@@ -8,7 +8,6 @@ import { KCAL_PER_GRAM } from "@/lib/nutrition/macros";
 import { goalAdjustment, weeklyChangeKg } from "@/lib/nutrition/plan";
 import { MACRO_FIELDS, macroRange, type MacroField } from "@/lib/nutrition/planTuning";
 import type { NutritionPlan } from "@/types/plan";
-import FitBotAvatar from "../ui/FitBotAvatar";
 import RangeSlider from "../ui/RangeSlider";
 import Segmented, { type SegmentedItem } from "../ui/Segmented";
 import Switch from "../ui/Switch";
@@ -16,7 +15,6 @@ import MacroSliderRow from "./MacroSliderRow";
 
 interface Props {
   plan: NutritionPlan;
-  notice: string | null;
   isNew: boolean;
   /** Overrides the save button's text (e.g. when the plan is for a dated period). */
   activateLabel?: string;
@@ -32,8 +30,8 @@ const MACRO_UI: Record<MacroField, { label: string; color: string; dot: string }
 
 const fmt = (n: number, digits = 0) => n.toLocaleString("tr-TR", { maximumFractionDigits: digits });
 
-/** The "fine-tuning desk": FitBot's strategy, then live sliders for calories and each macro. */
-export default function PlanReview({ plan, notice, isNew, activateLabel, onActivate, onBackToWizard }: Props) {
+/** The "fine-tuning desk": the plan summary, then live sliders for calories and each macro. */
+export default function PlanReview({ plan, isNew, activateLabel, onActivate, onBackToWizard }: Props) {
   const t = usePlanTuner(plan);
   const bmi = calculateBmi(plan.inputs);
   const change = weeklyChangeKg(goalAdjustment(plan.inputs));
@@ -47,23 +45,15 @@ export default function PlanReview({ plan, notice, isNew, activateLabel, onActiv
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-start">
       <div className="min-w-0 space-y-6">
-        {notice && (
-          <p role="alert" className="alert alert-warning animate-enter">
-            <TriangleAlert aria-hidden className="mt-0.5 size-4 shrink-0" />
-            {notice}
-          </p>
-        )}
-
         <section aria-labelledby="coach-heading" className="card animate-enter overflow-hidden">
           <div className="flex items-center gap-3 bg-ink px-4 py-3 text-on-ink sm:px-6">
-            <FitBotAvatar className="size-10" />
+            <Calculator aria-hidden className="size-6 shrink-0 text-cta" />
             <div className="min-w-0 flex-1">
               <h2 id="coach-heading" className="font-display text-base">
-                FitBot koç özeti
+                Plan özeti
               </h2>
-              <p className="text-xs text-on-ink-muted">{plan.source === "ai" ? "Yerel yapay zekâ ile kişiselleştirildi" : "Harris-Benedict formülüyle hesaplandı"}</p>
+              <p className="text-xs text-on-ink-muted">Harris-Benedict formülüyle hesaplandı</p>
             </div>
-            <span className={`badge ${plan.source === "ai" ? "bg-cta text-cta-fg" : "bg-ink-2 text-on-ink"}`}>{plan.source === "ai" ? "AI" : "Formül"}</span>
           </div>
           <p className="p-4 text-[15px] leading-relaxed sm:p-6">{plan.strategySummary}</p>
         </section>

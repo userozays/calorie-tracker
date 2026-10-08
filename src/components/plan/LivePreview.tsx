@@ -50,7 +50,7 @@ export default function LivePreview({ preview }: Props) {
               Bu tempoyla hedef kilona yaklaşık <strong>{preview.weeksToGoal} haftada</strong> ulaşırsın.
             </p>
           )}
-          <p className="mt-3 text-[11px] text-fg-subtle">Harris-Benedict formülüyle hesaplanır; AI koç son planda ince ayar yapar.</p>
+          <p className="mt-3 text-[11px] text-fg-subtle">Harris-Benedict formülüyle hesaplanır; son adımda kaydırıcılarla ince ayar yapabilirsin.</p>
         </>
       )}
     </aside>

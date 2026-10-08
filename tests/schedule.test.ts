@@ -27,7 +27,7 @@ const inputs: PlanInputs = {
 function planFor(id: string, goal: PlanInputs["goal"]): NutritionPlan {
   const i = { ...inputs, goal, intensity: goal === "cut" ? 500 : goal === "bulk" ? 250 : 0 };
   const r = formulaPlan(i);
-  return { id, createdAt: "2026-10-01T00:00:00.000Z", inputs: i, source: "formula", bmr: r.bmr, tdee: r.tdee, base: r.base, cycle: r.cycle, strategySummary: "" };
+  return { id, createdAt: "2026-10-01T00:00:00.000Z", inputs: i, bmr: r.bmr, tdee: r.tdee, base: r.base, cycle: r.cycle, strategySummary: "" };
 }
 
 const main = planFor("main", "maintain");

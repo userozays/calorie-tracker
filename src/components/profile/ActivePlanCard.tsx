@@ -1,11 +1,10 @@
-import { Moon, Pencil, Sparkles, Zap } from "lucide-react";
+import { Calculator, Moon, Pencil, Sparkles, Zap } from "lucide-react";
 import Link from "next/link";
 import { DIET_STYLE_LABELS, GOAL_LABELS, TRAINING_STYLE_LABELS } from "@/lib/labels";
 import type { DayType } from "@/lib/nutrition/plan";
 import type { TargetSource } from "@/lib/nutrition/targets";
 import type { Macros } from "@/types/nutrition";
 import type { NutritionPlan } from "@/types/plan";
-import FitBotAvatar from "../ui/FitBotAvatar";
 
 interface Props {
   plan: NutritionPlan | null;
@@ -25,12 +24,12 @@ export default function ActivePlanCard({ plan, period = null, targets, source, d
     return (
       <section aria-labelledby="plan-heading" className="card overflow-hidden">
         <div className="bg-ink p-4 text-on-ink sm:p-6">
-          <FitBotAvatar className="size-12" />
+          <Calculator aria-hidden className="size-10 text-cta" />
           <h2 id="plan-heading" className="mt-4 font-display text-xl">
-            AI beslenme planını oluştur
+            Beslenme planını oluştur
           </h2>
           <p className="mt-1 text-[13px] text-on-ink-muted">
-            4 adımda hedefini, antrenmanını ve beslenme tarzını anlat; FitBot sana özel kalori ve makro stratejisi hazırlasın.
+            4 adımda hedefini, antrenmanını ve beslenme tarzını anlat; sana özel kalori ve makro hedeflerini hesaplayalım.
           </p>
           <Link href="/plan" className="btn btn-primary btn-lg mt-4 w-full">
             <Sparkles aria-hidden className="size-4" /> Planımı oluştur
@@ -62,9 +61,6 @@ export default function ActivePlanCard({ plan, period = null, targets, source, d
             {GOAL_LABELS[i.goal].title} · {DIET_STYLE_LABELS[i.dietStyle]}
           </p>
         </div>
-        <span className={`badge shrink-0 ${plan.source === "ai" ? "bg-cta text-cta-fg" : "bg-surface-3 text-fg"}`}>
-          {plan.source === "ai" ? "AI koç" : "Formül"}
-        </span>
       </div>
 
       {dayType && (
@@ -95,7 +91,6 @@ export default function ActivePlanCard({ plan, period = null, targets, source, d
       </dl>
 
       <div className="mt-4 flex gap-3 rounded-[10px] border border-border bg-surface-2 p-3">
-        <FitBotAvatar className="size-8" />
         <p className="line-clamp-4 text-[13px] text-fg-muted">{plan.strategySummary}</p>
       </div>
 

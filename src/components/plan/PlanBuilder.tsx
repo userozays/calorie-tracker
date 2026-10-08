@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, ArrowRight, Sparkles } from "lucide-react";
+import { ArrowLeft, ArrowRight, Calculator } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
 import { useNutritionPlan } from "@/hooks/useNutritionPlan";
@@ -11,7 +11,6 @@ import type { NutritionPlan } from "@/types/plan";
 import type { Profile } from "@/types/profile";
 import SiteHeader from "../layout/SiteHeader";
 import PlanPeriodDialog from "../plans/PlanPeriodDialog";
-import GeneratingScreen from "./GeneratingScreen";
 import LivePreview from "./LivePreview";
 import PlanReview from "./PlanReview";
 import SensitiveWarningDialog from "./SensitiveWarningDialog";
@@ -21,7 +20,7 @@ import StepDiet from "./StepDiet";
 import StepTraining from "./StepTraining";
 import WizardProgress from "./WizardProgress";
 
-/** The /plan screen: wizard -> generating -> tuning desk. */
+/** The /plan screen: wizard -> tuning desk. */
 export default function PlanBuilder({ startInReview, target }: { startInReview: boolean; target: BuilderTarget }) {
   const { status } = useAuth();
   const { legacyProfile } = useNutritionPlan();
@@ -39,27 +38,24 @@ export default function PlanBuilder({ startInReview, target }: { startInReview: 
             <ArrowLeft aria-hidden className="size-3" /> Ana ekrana dön
           </Link>
           <h1 className="mt-4 font-display text-3xl sm:text-5xl">
-            {phase.kind === "review" ? "Planını ince ayarla" : target.kind === "newPeriod" ? "Yeni dönem planı" : "AI beslenme planın"}
+            {phase.kind === "review" ? "Planını ince ayarla" : target.kind === "newPeriod" ? "Yeni dönem planı" : "Beslenme planın"}
           </h1>
           <p className="mt-2 max-w-2xl text-sm text-on-ink-muted">
             {phase.kind === "review"
-              ? "FitBot'un önerisini kaydırıcılarla kendine göre ayarla, sonra aktif planın yap."
+              ? "Önerilen planı kaydırıcılarla kendine göre ayarla, sonra aktif planın yap."
               : target.kind === "newPeriod"
                 ? "Cut, Bulk ya da koruma: bu dönemin hedefini seç. Sonunda başlığını ve tarihlerini belirleyeceksin."
-                : "4 kısa adımda seni tanıyalım; FitBot metabolizmanı hesaplayıp sana özel bir strateji yazsın."}
+                : "4 kısa adımda seni tanıyalım; metabolizmanı hesaplayıp sana özel kalori ve makro hedeflerini çıkaralım."}
           </p>
         </div>
       </section>
 
       <main className="flex-1 rounded-t-[24px] bg-bg sm:rounded-t-[40px]">
         <div className="mx-auto w-full max-w-6xl px-4 pt-6 pb-24 sm:px-6 lg:pt-10">
-          {phase.kind === "generating" ? (
-            <GeneratingScreen stepIndex={phase.stepIndex} />
-          ) : phase.kind === "review" ? (
+          {phase.kind === "review" ? (
             <PlanReview
               key={phase.plan.id}
               plan={phase.plan}
-              notice={phase.notice}
               isNew={phase.isNew}
               activateLabel={activateLabel}
               onActivate={builder.activate}
@@ -127,7 +123,7 @@ function Wizard({
           </button>
           {w.isLast ? (
             <button type="button" disabled={!w.inputs} onClick={() => w.inputs && onGenerate(w.inputs)} className="btn btn-primary btn-lg">
-              <Sparkles aria-hidden className="size-4" /> AI planını oluştur
+              <Calculator aria-hidden className="size-4" /> Planımı oluştur
             </button>
           ) : (
             <button type="button" disabled={!w.stepValid[w.step]} onClick={w.next} className="btn btn-primary btn-lg">

@@ -47,7 +47,7 @@ export const planInputsSchema = z
     heightCm: limited("heightCm"),
     weightKg: limited("weightKg"),
     age: limited("age"),
-    /** Optional goal weight, only used for the "weeks to goal" estimate and FitBot. */
+    /** Optional goal weight, only used for the "weeks to goal" estimate. */
     targetWeightKg: limited("weightKg").nullable(),
     goal: z.enum(PLAN_GOALS),
     /** Daily deficit (cut) or surplus (bulk) in kcal; 0 for maintain. */
@@ -81,8 +81,6 @@ export const nutritionPlanSchema = z.object({
   id: z.string().min(1).max(64),
   createdAt: z.string(),
   inputs: planInputsSchema,
-  /** "ai": numbers and summary from the local LLM (validated); "formula": Harris-Benedict fallback. */
-  source: z.enum(["ai", "formula"]),
   bmr: z.number().positive(),
   tdee: z.number().positive(),
   /** Targets for every day, or the weekly average when cycling. */
@@ -92,13 +90,6 @@ export const nutritionPlanSchema = z.object({
   strategySummary: z.string().max(1200),
 });
 export type NutritionPlan = z.infer<typeof nutritionPlanSchema>;
-
-/** POST /api/plans/generate response: a draft plan (not saved yet) and, on fallback, a notice. */
-export const generatePlanResponseSchema = z.object({
-  plan: nutritionPlanSchema,
-  notice: z.string().nullable(),
-});
-export type GeneratePlanResponse = z.infer<typeof generatePlanResponseSchema>;
 
 /*
  * Plan periods ("dönemler"): a titled plan that applies between two dates, both included, e.g. a

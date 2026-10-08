@@ -24,7 +24,7 @@ const COPY = {
   register: {
     eyebrow: "Kayıt ol",
     headline: "İlk adım burada.",
-    lead: "Bir kullanıcı adı ve şifre yeter. Planını FitBot ile birlikte kuralım.",
+    lead: "Bir kullanıcı adı ve şifre yeter. Planını birlikte kuralım.",
     legendId: "kipchoge",
     formTitle: "Hesap oluştur",
     formLead: "Sadece bir kullanıcı adı ve şifre yeterli.",

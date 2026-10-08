@@ -1,23 +1,14 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
-import { formulaPlan, formulaSummary } from "@/lib/nutrition/plan";
+import { useCallback, useState } from "react";
+import { buildPlan } from "@/lib/nutrition/plan";
 import { ROUTES } from "@/lib/routes";
-import { ApiError } from "@/services/http";
-import { planService } from "@/services/planService";
 import { defaultPlanTitle } from "@/lib/nutrition/schedule";
 import type { NutritionPlan, PlanInputs } from "@/types/plan";
 import { useAuth } from "./useAuth";
 import { useNutritionPlan } from "./useNutritionPlan";
 import { useToast } from "./useToast";
-
-export const GENERATION_STEPS = ["Metabolizma hesaplanıyor…", "Makro dengeleri kuruluyor…", "Koç stratejisi yazılıyor…"] as const;
-const STEP_MS = 1300;
-/** Keep the loading screen up long enough to read, even when the fallback answers instantly. */
-const MIN_LOADING_MS = STEP_MS * GENERATION_STEPS.length;
-
-const AI_UNAVAILABLE = "AI koç servisine erişilemedi, standart bilimsel formülle plan oluşturuldu.";
 
 /** Which plan the flow edits: the main plan, a saved period's plan, or one for a new period. */
 export type BuilderTarget = { kind: "main" } | { kind: "period"; id: string } | { kind: "newPeriod" };
@@ -28,32 +19,12 @@ export interface PendingPeriod {
   title: string;
 }
 
-export type BuilderPhase =
-  | { kind: "wizard" }
-  | { kind: "generating"; stepIndex: number }
-  | { kind: "review"; plan: NutritionPlan; notice: string | null; isNew: boolean };
+export type BuilderPhase = { kind: "wizard" } | { kind: "review"; plan: NutritionPlan; isNew: boolean };
 
-/** Same fallback as the server's, for when the server itself can't be reached. */
-function localFallback(inputs: PlanInputs): NutritionPlan {
-  const result = formulaPlan(inputs);
-  return {
-    id: typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `plan_${Date.now()}`,
-    createdAt: new Date().toISOString(),
-    inputs,
-    source: "formula",
-    bmr: result.bmr,
-    tdee: result.tdee,
-    base: result.base,
-    cycle: result.cycle,
-    strategySummary: formulaSummary(inputs, result),
-  };
-}
+/** `crypto.randomUUID` needs a secure context; plain-http LAN testing falls back to a timestamp id. */
+const newPlanId = () => (typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `plan_${Date.now()}`);
 
-/**
- * The /plan flow: wizard -> AI generation (stepped loading screen) -> fine-tuning -> save. A plan
- * is always produced: if the AI or even the server is unavailable, the formula plan is used and
- * the user is told so.
- */
+/** The /plan flow: wizard -> fine-tuning -> save. The plan is computed in the browser, instantly. */
 export function usePlanBuilder(startInReview: boolean, target: BuilderTarget = { kind: "main" }) {
   const router = useRouter();
   const toast = useToast();
@@ -66,37 +37,15 @@ export function usePlanBuilder(startInReview: boolean, target: BuilderTarget = {
   // in the tuning desk once the account has loaded, otherwise the wizard.
   const [phase, setPhase] = useState<BuilderPhase | null>(null);
   const effectivePhase: BuilderPhase =
-    phase ?? (startInReview && activePlan ? { kind: "review", plan: activePlan, notice: null, isNew: false } : { kind: "wizard" });
-
-  useEffect(() => {
-    if (phase?.kind !== "generating") return;
-    const timer = setInterval(
-      () => setPhase((p) => (p?.kind === "generating" ? { ...p, stepIndex: Math.min(GENERATION_STEPS.length - 1, p.stepIndex + 1) } : p)),
-      STEP_MS,
-    );
-    return () => clearInterval(timer);
-  }, [phase?.kind]);
+    phase ?? (startInReview && activePlan ? { kind: "review", plan: activePlan, isNew: false } : { kind: "wizard" });
 
   const generate = useCallback(
     (inputs: PlanInputs) =>
-      requireAuth(async () => {
-        setPhase({ kind: "generating", stepIndex: 0 });
-        const minimum = new Promise((resolve) => setTimeout(resolve, MIN_LOADING_MS));
-        try {
-          const [result] = await Promise.all([planService.generate(inputs), minimum]);
-          setPhase({ kind: "review", plan: result.plan, notice: result.notice, isNew: true });
-        } catch (err) {
-          if (err instanceof ApiError && err.status === 401) {
-            // Session expired meanwhile: back to the answers, which are kept, and sign in again.
-            setPhase({ kind: "wizard" });
-            toast.error("Oturumun sona erdi", "Tekrar giriş yapıp planı yeniden oluştur.");
-            return;
-          }
-          await minimum;
-          setPhase({ kind: "review", plan: localFallback(inputs), notice: AI_UNAVAILABLE, isNew: true });
-        }
+      requireAuth(() => {
+        const plan = buildPlan(inputs, { id: newPlanId(), createdAt: new Date().toISOString() });
+        setPhase({ kind: "review", plan, isNew: true });
       }),
-    [requireAuth, toast],
+    [requireAuth],
   );
 
   const activate = useCallback(

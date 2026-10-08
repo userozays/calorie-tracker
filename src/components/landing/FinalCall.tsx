@@ -4,7 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { motion } from "motion/react";
 import Link from "next/link";
 import { ROUTES } from "@/lib/routes";
-import FitBotAvatar from "../ui/FitBotAvatar";
+import LogoMark from "../ui/LogoMark";
 import { SPRING_SCENE } from "../ui/motion";
 import MaskedWords from "./MaskedWords";
 
@@ -26,13 +26,13 @@ export default function FinalCall({ onRegister, onLogin }: Props) {
       <section aria-labelledby="cta-heading" className="flex min-h-[80svh] items-center border-t border-ink-2">
         <div className="mx-auto w-full max-w-7xl px-4 py-24 sm:px-6">
           <motion.div {...appear(0)}>
-            <FitBotAvatar className="size-14" />
+            <LogoMark size={56} />
           </motion.div>
           <h2 id="cta-heading" className="mt-8 font-display text-6xl leading-[1.02] sm:text-8xl lg:text-9xl">
             <MaskedWords text="Sıra" inView /> <MaskedWords text="sende." inView delay={0.08} className="text-cta" />
           </h2>
           <motion.p {...appear(0.3)} className="mt-6 max-w-xl text-base text-on-ink-muted sm:text-lg">
-            Hedefini söyle, FitBot planını kursun. Hesap açmak bir dakika sürer; verilerini istediğin an indirir ya da silersin.
+            Hedefini söyle, planını birlikte kuralım. Hesap açmak bir dakika sürer; verilerini istediğin an indirir ya da silersin.
           </motion.p>
           <motion.div {...appear(0.4)} className="mt-10 flex flex-wrap items-center gap-3">
             <button type="button" onClick={onRegister} className="btn btn-primary btn-lg">

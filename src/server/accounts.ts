@@ -1,8 +1,10 @@
+import { randomUUID } from "node:crypto";
 import type { User } from "@prisma/client";
 import type { Credentials } from "@/types/auth";
 import type { OnboardingInput } from "@/types/onboarding";
 import { EMPTY_SETTINGS, parseSettingsJSON, type UserSettings } from "@/types/settings";
 import { onboardingToPlanInputs } from "@/lib/nutrition/onboarding";
+import { buildPlan } from "@/lib/nutrition/plan";
 import { toCsv } from "@/lib/csv";
 import { SLOT_LABELS } from "@/lib/labels";
 import { dayKey } from "@/lib/dates";
@@ -10,7 +12,6 @@ import type { ExportFormat } from "@/types/account";
 import { burnPasswordCheck, hashPassword, verifyPassword } from "./auth";
 import { db } from "./db";
 import { listAllMeals, listImageUrls, listSavedMeals } from "./meals/repository";
-import { buildFormulaPlan } from "./plans/generate";
 import { deleteImage } from "./storage";
 import { exportTracking } from "./tracking/repository";
 
@@ -58,7 +59,7 @@ export function settingsOf(user: Pick<User, "settings">): UserSettings {
  * preview is never trusted), makes it the active plan and opens the panel for this account.
  */
 export async function completeOnboarding(user: Pick<User, "id" | "settings">, input: OnboardingInput): Promise<UserSettings> {
-  const settings: UserSettings = { ...settingsOf(user), nutritionPlan: buildFormulaPlan(onboardingToPlanInputs(input)) };
+  const settings: UserSettings = { ...settingsOf(user), nutritionPlan: buildPlan(onboardingToPlanInputs(input), { id: randomUUID(), createdAt: new Date().toISOString() }) };
   await db.user.update({ where: { id: user.id }, data: { settings: JSON.stringify(settings), onboardingCompleted: true } });
   return settings;
 }

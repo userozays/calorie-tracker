@@ -14,9 +14,7 @@
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:studio": "prisma studio",
-    "db:reset": "prisma migrate reset",
-    "fitbot:eval": "node scripts/fitbot-eval.mjs",
-    "kb:ingest": "node scripts/kb-ingest.mjs"
+    "db:reset": "prisma migrate reset"
   },
   "dependencies": {
     "@huggingface/transformers": "^4.3.1",

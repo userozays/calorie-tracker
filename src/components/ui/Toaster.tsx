@@ -24,7 +24,7 @@ interface Props {
   onDismiss: (id: number) => void;
 }
 
-/** Stack of toasts, bottom-centre on phones and bottom-left on desktop (FitBot owns bottom-right). */
+/** Stack of toasts, bottom-centre on phones and bottom-left on desktop. */
 export default function Toaster({ toasts, onDismiss }: Props) {
   return (
     <div

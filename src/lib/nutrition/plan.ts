@@ -1,12 +1,11 @@
 import { DIET_STYLE_LABELS, TRAINING_STYLE_LABELS } from "@/lib/labels";
-import type { CustomPlan, Profile } from "@/types/profile";
 import { PROTEIN_PER_KG, type DayTargets, type DietStyle, type NutritionPlan, type PlanInputs, type TrainingStyle } from "@/types/plan";
 
 /*
  * Plan math: Harris-Benedict BMR, activity from the training routine, goal adjustment, the
  * high-protein macro engine (protein 2.2 g/kg, fat 1.0–1.5 g/kg, carbs fill the rest; keto and
  * low-carb cap the carbs) and training/rest-day calorie cycling. Pure functions shared by the server
- * (formula baseline + AI sanity checks) and the wizard (live previews).
+ * (first-time setup) and the wizard (live previews and the plan itself).
  */
 
 /** kcal in 1 kg of body fat, the usual rule of thumb for weekly change estimates. */
@@ -122,7 +121,7 @@ export function formulaPlan(inputs: PlanInputs): FormulaResult {
 
 const fmt = (n: number, digits = 0) => n.toLocaleString("tr-TR", { maximumFractionDigits: digits });
 
-/** A personalised 2–3 sentence strategy, used when the AI coach is unavailable. */
+/** A personalised 2–3 sentence strategy shown with the plan. */
 export function formulaSummary(inputs: PlanInputs, result: FormulaResult): string {
   const adj = goalAdjustment(inputs);
   const perKg = result.base.protein / inputs.weightKg;
@@ -158,6 +157,20 @@ export function formulaSummary(inputs: PlanInputs, result: FormulaResult): strin
   return sentences.join(" ");
 }
 
+/** The plan built from the wizard's answers; `id` and `createdAt` come from the caller (no I/O here). */
+export function buildPlan(inputs: PlanInputs, meta: { id: string; createdAt: string }): NutritionPlan {
+  const result = formulaPlan(inputs);
+  return {
+    ...meta,
+    inputs,
+    bmr: result.bmr,
+    tdee: result.tdee,
+    base: result.base,
+    cycle: result.cycle,
+    strategySummary: formulaSummary(inputs, result),
+  };
+}
+
 /** Monday = 0 … Sunday = 6. */
 export const weekdayIndex = (date: Date) => (date.getDay() + 6) % 7;
 
@@ -168,38 +181,4 @@ export function targetsForDate(plan: NutritionPlan, date: Date): { targets: DayT
   if (!plan.cycle) return { targets: plan.base, dayType: null };
   const training = plan.inputs.trainingDays.includes(weekdayIndex(date));
   return training ? { targets: plan.cycle.training, dayType: "training" } : { targets: plan.cycle.rest, dayType: "rest" };
-}
-
-/**
- * The plan as FitBot's existing context shapes (a Profile + a custom plan with today's targets), so
- * the coach sees the new plan without changing its prompt or tools.
- */
-export function planForFitbot(plan: NutritionPlan, date: Date): { profile: Profile; customPlan: CustomPlan } {
-  const i = plan.inputs;
-  const factor = plan.tdee / plan.bmr;
-  const activity = factor < 1.3 ? "sedentary" : factor < 1.45 ? "light" : factor < 1.6 ? "moderate" : factor < 1.8 ? "active" : "veryActive";
-  const trainingType = i.trainingStyle === "strength" ? "hypertrophy" : i.trainingStyle === "functional" ? "strength" : i.trainingStyle === "cardio" ? "cardio" : "rest";
-  const paceGoal = i.intensity <= 350 ? "slow" : i.intensity <= 600 ? "moderate" : "aggressive";
-  const { targets } = targetsForDate(plan, date);
-  return {
-    profile: {
-      id: plan.id,
-      label: "AI planı",
-      gender: i.sex,
-      heightCm: i.heightCm,
-      weightKg: i.weightKg,
-      age: i.age,
-      activity,
-      targetWeightKg: i.targetWeightKg,
-      paceGoal,
-      trainingType,
-    },
-    customPlan: {
-      calories: targets.calories,
-      minProtein: Math.max(1, targets.protein),
-      carbs: Math.max(1, targets.carbs),
-      fat: Math.max(1, targets.fat),
-      active: true,
-    },
-  };
 }
